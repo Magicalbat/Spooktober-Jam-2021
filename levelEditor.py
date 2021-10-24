@@ -13,15 +13,13 @@ from engine.common import *
 from engine.input import Input
 from engine.tilemap import Tilemap
 
-tileSize = 8
-tilemap = Tilemap(tileSize, layers=1)
-tilemap.loadTileImgs("data/images/tiles/grass tiles - 8x.png", (4, 4), (1, 1), 14, (0, 0, 0))
+tileSize = 12
+tilemap = Tilemap(tileSize, layers=2)
+tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,3), (1, 1), 10, (0, 0, 0))
 
 #tilemap.loadFromJson("data/maps/test.json", True)
 
-decorations = loadSpriteSheet("data/images/tiles/grass decorations - 8x.png", (6, 4), (4, 1), (1,1), 4, (0,0,0))
-
-tileImgs = loadSpriteSheet("data/images/tiles/grass tiles - 8x.png", (8, 8), (4, 4), (1, 1), 14, (0, 0, 0))
+tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,3), (1, 1), 10, (0, 0, 0))
 
 #setCursorFromImg("data/level editor/color picker.png", "X", "data/level editor/color picker.txt")
 
@@ -34,7 +32,7 @@ sideBarBg.set_alpha(128)
 selectionRects = []
 
 for i in range(len(tileImgs)):
-    selectionRects.append(pygame.Rect(tileSize + int(i / 10) * tileSize * 2, tileSize * i * 2 + tileSize * 2 - (int(i / 10) * tileSize * 20), tileSize, tileSize))
+    selectionRects.append(pygame.Rect(tileSize + int(i / 7) * tileSize * 2, tileSize * i * 2 + tileSize * 2 - (int(i / 7) * tileSize * 14), tileSize, tileSize))
 
 selectedTile = 0
 
@@ -102,7 +100,7 @@ while mainRunning:
 
     scroll = [int(trueScroll[0] / tileSize) * tileSize, int(trueScroll[1] / tileSize) * tileSize]
 
-    tilemap.draw(win, scroll, currentLayer)
+    tilemap.draw(win, scroll)#, currentLayer)
     #tilemap.collisionDraw(win, True)
 
     mousePos = pygame.mouse.get_pos()
@@ -140,7 +138,7 @@ while mainRunning:
             if inp.mouseJustPressed(0):
                 selectionPos1 = mousePos
             
-            if inp.mouseDown(0) and mousePos[0] >   sideBarBg.get_width():
+            if inp.mouseDown(0) and mousePos[0] - scroll[0] > sideBarBg.get_width():
                 selectionPos2 = mousePos
             
             if inp.keyJustPressed(pygame.K_f):
@@ -175,5 +173,5 @@ while mainRunning:
     pygame.display.update()
     
 tilemap.generateCollision([i for i in range(14)], True)
-tilemap.saveToJson("data/maps/test.json", False)
+tilemap.saveToJson("data/maps/test.json", True)
 pygame.quit()
