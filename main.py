@@ -1,5 +1,6 @@
+import pygame
+
 def main():
-    import pygame
     pygame.init()
 
     pygame.event.set_allowed([pygame.QUIT])
@@ -12,6 +13,11 @@ def main():
     clock = pygame.time.Clock()
     fps = 60
 
+    from engine.screenmanager import ScreenManager
+    from game.testscreen import TestScreen
+
+    screenManger = ScreenManager(TestScreen())
+
     running = True
     while running:
         clock.tick(fps)
@@ -19,15 +25,11 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
-        win.fill((200,200,200))
-
         
-
-        pygame.display.update()
-
+        screenManger.draw(win)
+        screenManger.update(clock.get_time() / 1000)
+        
     pygame.quit()
 
 if __name__ == '__main__':
     main()
- 
