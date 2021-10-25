@@ -20,7 +20,7 @@ class Pumpkin(Entity):
             rects.remove(self.rect)
         super().update(delta, rects, chunks)
 
-        if self.velocity.length() < 0.1:
+        if self.velocity.y == 0:
             self.applyGravity = False
             self.handleCollision = False
 

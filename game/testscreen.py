@@ -48,16 +48,20 @@ class TestScreen(GameScreen):
             self.fps = int(1 / delta)
         delta = min(delta, 0.1)
 
-        pumpkinRects = [p.rect for p in self.pumpkins]
+        entityRects = [p.rect for p in self.pumpkins]
 
-        self.player.update(delta, inp, pumpkinRects, self.tilemap.chunks)
+        self.player.update(delta, inp, entityRects, self.tilemap.chunks)
+
+        entityRects.append(self.player.rect)
 
         for p in self.pumpkins:
-            p.update(delta, pumpkinRects, self.tilemap.chunks)
+            p.update(delta, entityRects, self.tilemap.chunks)
 
-        if inp.keyJustPressed(pygame.K_f):
+        if inp.keyJustPressed(pygame.K_x):
             self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity))
             self.player.reset()
+        if inp.keyJustPressed(pygame.K_r):
+            self.screenManager.reloadCurrentScreen()
 
         #mousePos = pygame.mouse.get_pos()
         #self.particles.emit(mousePos, 2)
