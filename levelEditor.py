@@ -15,17 +15,17 @@ from engine.tilemap import Tilemap
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
-tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,3), (1, 1), 10, (0, 0, 0))
+tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
-#tilemap.loadFromJson("data/maps/test.json", True)
+tilemap.loadFromJson("data/maps/test.json", True)
 
-tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,3), (1, 1), 10, (0, 0, 0))
+tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
 #setCursorFromImg("data/level editor/color picker.png", "X", "data/level editor/color picker.txt")
 
 #setCursorFromTxt("data/level editor/color picker.txt")
 
-sideBarBg = pygame.Surface((tileSize * 5, 180))
+sideBarBg = pygame.Surface((tileSize * 7, 180))
 sideBarBg.fill((200, 200, 200))
 sideBarBg.set_alpha(128)
 
@@ -172,6 +172,6 @@ while mainRunning:
 
     pygame.display.update()
     
-tilemap.generateCollision([i for i in range(14)], True)
-tilemap.saveToJson("data/maps/test.json", True)
+tilemap.generateCollision([i + 1 for i in range(15)], True)
+tilemap.saveToJson("data/maps/test.json", False)
 pygame.quit()
