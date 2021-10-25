@@ -17,7 +17,7 @@ tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
-#tilemap.loadFromJson("data/maps/test.json", True)
+tilemap.loadFromJson("data/maps/really_bad_map.json", True)
 
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
@@ -156,11 +156,12 @@ while mainRunning:
             if inp.mouseJustPressed(0):
                 floodFill(tilemap.drawTiles[currentLayer], (int(mousePos   [0] / tileSize), int(mousePos[1] / tileSize)),  selectedTile)
         elif editState == "Color Picker":
-            win.blit(mouseBox, mousePos)
+            win.blit(mouseBox, (mousePos[0] - scroll[0], mousePos[1] - scroll[1]))
 
             if inp.mouseJustPressed(0):
-                selectedTile = tilemap.drawTiles[currentLayer][(int(mousePos[0] / tileSize), int(mousePos[1] / tileSize))]
-                changeState("Pencil")
+                if (int(mousePos[0] / tileSize), int(mousePos[1] / tileSize)) in tilemap.drawTiles[currentLayer]:
+                    selectedTile = tilemap.drawTiles[currentLayer][(int(mousePos[0] / tileSize), int(mousePos[1] / tileSize))]
+                    changeState("Pencil")
     
     win.blit(sideBarBg, (0,0))
 

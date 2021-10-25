@@ -10,12 +10,14 @@ class Player(Entity):
 
         self.startPos = copy.deepcopy(self.pos)
 
-        self.speed = 12 * 5
+        self.maxSpeed = 12 * 5
+        self.accel = 12
+        self.friction = 14
 
         self.jumpPressTimer = 0
         self.groundTimer = 0
 
-        maxJumpHeight = 3.25 * 12
+        maxJumpHeight = 3.35 * 12
         minJumpHeight = 0.75 * 12
         jumpDur = 0.5
 
@@ -27,13 +29,28 @@ class Player(Entity):
         self.handleCollision = True
     
     def update(self, delta, inp, collisionRects=None, chunks=None):
-        self.velocity.x = 0
+        accelerating = False
 
         if inp.keyDown(pygame.K_RIGHT):
-            self.velocity.x = self.speed
+            self.velocity.x += self.accel
+            self.velocity.x = min(self.velocity.x, self.maxSpeed)
+            accelerating = True
         if inp.keyDown(pygame.K_LEFT):
-            self.velocity.x = -self.speed
+            self.velocity.x -= self.accel
+            self.velocity.x = max(self.velocity.x, -self.maxSpeed)
+            accelerating = True
         
+        moveDir = 0
+        if self.velocity.x:
+            moveDir = self.velocity.x / abs(self.velocity.x)
+
+        if not accelerating:
+            self.velocity.x -= self.friction * moveDir
+            if moveDir == 1:
+                self.velocity.x = max(self.velocity.x, 0)
+            else:
+                self.velocity.x = min(self.velocity.x, 0)
+
         super().update(delta, collisionRects, chunks)
 
         self.jumpPressTimer -= delta
@@ -55,5 +72,7 @@ class Player(Entity):
     
     def reset(self):
         self.pos = copy.deepcopy(self.startPos)
+        self.rect.x = round(self.pos.x)
+        self.rect.y = round(self.pos.y)
         self.velocity.x = 0
         self.velocity.y = 0

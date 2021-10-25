@@ -1,9 +1,7 @@
 import pygame
 
-
 def lerp(a, b, f):
     return a + f * (b - a)
-
 
 def getCollidingRects(testRect, rects):
     hitlist = []

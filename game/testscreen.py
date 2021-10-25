@@ -4,6 +4,7 @@ from engine.gamescreen import GameScreen
 from engine.tilemap import Tilemap
 from engine.particles import Particles
 from engine.text import Text
+from engine.common import *
 
 from game.player import Player
 from game.pumpkin import Pumpkin
@@ -37,7 +38,7 @@ class TestScreen(GameScreen):
         for p in self.pumpkins:
             p.drawRect(win)
 
-        win.blit(self.text.createTextSurf(str(self.fps)), (0,0))
+        win.blit(self.text.createTextSurf(f'({int(self.player.pos.x)}, {int(self.player.pos.y)})'), (0,0))
         
         pygame.display.update()
 
@@ -59,7 +60,14 @@ class TestScreen(GameScreen):
 
         if inp.keyJustPressed(pygame.K_x):
             self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity))
+            
             self.player.reset()
+
+            hitlist = getCollidingRects(self.player.rect, [p.rect for p in self.pumpkins])
+            
+            for rect in hitlist:
+                self.pumpkins.remove(rect)
+
         if inp.keyJustPressed(pygame.K_r):
             self.screenManager.reloadCurrentScreen()
 
