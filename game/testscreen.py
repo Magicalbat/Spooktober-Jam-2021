@@ -38,7 +38,7 @@ class TestScreen(GameScreen):
         for p in self.pumpkins:
             p.drawRect(win)
 
-        win.blit(self.text.createTextSurf(f'({int(self.player.pos.x)}, {int(self.player.pos.y)})'), (0,0))
+        win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
         
         pygame.display.update()
 
