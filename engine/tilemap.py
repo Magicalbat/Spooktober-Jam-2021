@@ -32,6 +32,7 @@ class Tilemap:
     def generateCollision(self, collidableTiles, optimize, resetCollision=True):
         if resetCollision:
             self.chunks = {}
+        collidableTiles = set(collidableTiles)
         self.chunks['tileSize'] = self.tileSize
         self.chunks['chunkSize'] = self.chunkSize
         for l in range(len(self.drawTiles)):

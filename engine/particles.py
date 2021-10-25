@@ -52,14 +52,14 @@ class Particles:
             if tiles != {}:
                 self.pos[i][0] += self.vel[i][0] * delta
 
-                tilePos = (int(self.pos[i][0] / 8), int(self.pos[i][1] / 8))
+                tilePos = (int(self.pos[i][0] / tileSize), int(self.pos[i][1] / tileSize))
                 if tilePos in tiles[colLayer]:
                     self.vel[i][0] *= -1
                     self.pos[i][0] += self.vel[i][0] * 2 * delta
                 
                 self.pos[i][1] += self.vel[i][1] * delta
 
-                tilePos = (int(self.pos[i][0] / 8), int(self.pos[i][1] / 8))
+                tilePos = (int(self.pos[i][0] / tileSize), int(self.pos[i][1] / tileSize))
                 if tilePos in tiles[colLayer]:
                     self.vel[i][1] *= -random.uniform(0.75, 1)
                     self.pos[i][1] += self.vel[i][1] * 2 * delta

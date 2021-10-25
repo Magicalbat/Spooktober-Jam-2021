@@ -1,13 +1,13 @@
 import pygame
 
-import math
+import math, copy
 
 from engine.common import *
 
 class Entity:
     def __init__(self, x, y, width, height, rectCol=(0,255,0)):
-        self.rect = pygame.Rect((x, y, width, height))
-        self.pos = pygame.math.Vector2((x, y))
+        self.rect = pygame.Rect((copy.deepcopy(x), copy.deepcopy(y), copy.deepcopy(width), copy.deepcopy(height)))
+        self.pos = pygame.math.Vector2((copy.deepcopy(x), copy.deepcopy(y)))
 
         self.rectDisplaySurf = pygame.Surface((width, height))
         self.rectDisplaySurf.fill(rectCol)
@@ -18,13 +18,13 @@ class Entity:
         self.handleCollision = False
 
         self.gravity = 320
-        self.velocity = [0, 0]
+        self.velocity = pygame.math.Vector2((0,0))
 
         self.collisionTypes = {'top': False, 'bottom': False, 'right': False, 'left': False}
 
     def drawRect(self, win, scroll=(0,0)):
-        #win.blit(self.rectDisplaySurf, (self.rect.x - scroll[0], self.rect.y - scroll[1]))
-        pygame.draw.rect(win, (255,0,0), (self.rect.x - scroll[0], self.rect.y - scroll[1], self.rect.w, self.rect.h), width=1)
+        win.blit(self.rectDisplaySurf, (self.rect.x - scroll[0], self.rect.y - scroll[1]))
+        #pygame.draw.rect(win, (255,0,0), (self.rect.x - scroll[0], self.rect.y - scroll[1], self.rect.w, self.rect.h), width=1)
 
     def addChunk(self, pos, chunks, collisionRects):
         self.addChunkFromChunkPos((self.toChunkSpace(pos[0], chunks), self.toChunkSpace(pos[1], chunks)), chunks, collisionRects)
@@ -42,8 +42,8 @@ class Entity:
         testPointsX = [
             self.pos.x,
             self.pos.x + self.rect.w,
-            self.pos.x + move[0],
-            self.pos.x + self.rect.w + move[0]
+            self.pos.x + move.x,
+            self.pos.x + self.rect.w + move.x
         ]
 
         minX = min(testPointsX)
@@ -52,8 +52,8 @@ class Entity:
         testPointsY = [
             self.pos.y,
             self.pos.y + self.rect.h,
-            self.pos.y + move[1],
-            self.pos.y + self.rect.h + move[1]
+            self.pos.y + move.y,
+            self.pos.y + self.rect.h + move.y
         ]
 
         minY = min(testPointsY)
@@ -87,11 +87,11 @@ class Entity:
             self.collisionTypes = {'top': False, 'bottom': False, 'right': False, 'left': False}
 
             if chunks != {}:
-                self.getChunksWithMove((self.velocity[0] * delta, self.velocity[1] * delta), chunks, collisionRects)
+                self.getChunksWithMove(self.velocity * delta, chunks, collisionRects)
 
-            self.pos.x += self.velocity[0] * delta
+            self.pos.x += self.velocity.x * delta
             
-            if self.velocity[0] > 0:
+            if self.velocity.x > 0:
                 self.rect.x = math.ceil(self.pos.x)
             else:
                 self.rect.x = int(self.pos.x)
@@ -99,20 +99,20 @@ class Entity:
             hitlist = getCollidingRects(self.rect, collisionRects)
 
             for rect in hitlist:
-                if self.velocity[0] > 0:
+                if self.velocity.x > 0:
                     self.rect.right = rect.left
                     self.pos.x = self.rect.x
-                    self.velocity[0] = 0
+                    self.velocity.x = 0
                     self.collisionTypes['right'] = True
                 if self.velocity[0] < 0:
                     self.rect.left = rect.right
                     self.pos.x = self.rect.x
-                    self.velocity[0] = 0
+                    self.velocity.x = 0
                     self.collisionTypes['left'] = True
             
-            self.pos.y += self.velocity[1] * delta
+            self.pos.y += self.velocity.y * delta
             
-            if self.velocity[1] > 0:
+            if self.velocity.y > 0:
                 self.rect.y = math.ceil(self.pos.y)
             else:
                 self.rect.y = int(self.pos.y)
@@ -120,13 +120,13 @@ class Entity:
             hitlist = getCollidingRects(self.rect, collisionRects)
 
             for rect in hitlist:
-                if self.velocity[1] > 0 and self.collisionTypes['top'] == False:
+                if self.velocity.y > 0 and self.collisionTypes['top'] == False:
                     self.rect.bottom = rect.top
                     self.pos.y = self.rect.y
-                    self.velocity[1] = 0
+                    self.velocity.y = 0
                     self.collisionTypes['bottom'] = True
-                elif self.velocity[1] < 0:
+                elif self.velocity.y < 0:
                     self.rect.top = rect.bottom
                     self.pos.y = self.rect.y
-                    self.velocity[1] = 1
+                    self.velocity.y = 1
                     self.collisionTypes['top'] = True
