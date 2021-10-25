@@ -15,7 +15,10 @@ class Pumpkin(Entity):
         self.handleCollision = True
     
     def update(self, delta, collisionRects=None, chunks=None):
-        super().update(delta, collisionRects, chunks)
+        rects = copy.deepcopy(collisionRects)
+        if self.rect in collisionRects:
+            rects.remove(self.rect)
+        super().update(delta, rects, chunks)
 
         if self.velocity.length() < 0.1:
             self.applyGravity = False

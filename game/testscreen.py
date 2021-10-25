@@ -48,12 +48,12 @@ class TestScreen(GameScreen):
             self.fps = int(1 / delta)
         delta = min(delta, 0.1)
 
-        stillPumpkins = [p.rect for p in self.pumpkins if not p.handleCollision]
+        pumpkinRects = [p.rect for p in self.pumpkins]
 
-        self.player.update(delta, inp, stillPumpkins, self.tilemap.chunks)
+        self.player.update(delta, inp, pumpkinRects, self.tilemap.chunks)
 
         for p in self.pumpkins:
-            p.update(delta, stillPumpkins, self.tilemap.chunks)
+            p.update(delta, pumpkinRects, self.tilemap.chunks)
 
         if inp.keyJustPressed(pygame.K_f):
             self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity))
