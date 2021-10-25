@@ -3,6 +3,10 @@ import pygame
 def lerp(a, b, f):
     return a + f * (b - a)
 
+# Value, Lower Bounds, Upper Bounds
+def clamp(a, l, u):
+    return min(u, max(a, l))
+
 def getCollidingRects(testRect, rects):
     hitlist = []
 
