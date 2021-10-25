@@ -3,6 +3,8 @@ import pygame
 import math, copy
 
 from engine.entity import Entity
+from engine.animation import Animation
+from engine.common import *
 
 class Player(Entity):
     def __init__(self, x, y, width, height):
@@ -10,8 +12,9 @@ class Player(Entity):
 
         self.startPos = copy.deepcopy(self.pos)
 
-        self.img = pygame.image.load("data/images/pumpkins/Base Pumpkin.png").convert()
-        self.img.set_colorkey((0,0,0))
+        self.imgs = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
+        self.imgCycleAnim = Animation([0,4], .125)
+        self.flipped = False
 
         self.maxSpeed = 12 * 5
         self.accel = 12
@@ -32,21 +35,33 @@ class Player(Entity):
         self.handleCollision = True
     
     def draw(self, win, scroll=(0,0)):
-        win.blit(self.img, (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
+        win.blit(pygame.transform.flip(self.imgs[0 + int(self.imgCycleAnim.value)], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
+        win.blit(pygame.transform.flip(self.imgs[4 + int(self.imgCycleAnim.value)], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
         #pygame.draw.rect(win, (255,0,0), self.rect, width=1)
         #super().drawRect(win, scroll)
     
     def update(self, delta, inp, collisionRects=None, chunks=None):
+        self.imgCycleAnim.update(delta)
+
         accelerating = False
 
-        if inp.keyDown(pygame.K_RIGHT):
+        rightPressed = inp.keyDown(pygame.K_RIGHT)
+        leftPressed = inp.keyDown(pygame.K_LEFT)
+
+        if rightPressed:
             self.velocity.x += self.accel
             self.velocity.x = min(self.velocity.x, self.maxSpeed)
             accelerating = True
-        if inp.keyDown(pygame.K_LEFT):
+
+            if not leftPressed:
+                self.flipped = False
+        if leftPressed:
             self.velocity.x -= self.accel
             self.velocity.x = max(self.velocity.x, -self.maxSpeed)
             accelerating = True
+
+            if not rightPressed:
+                self.flipped = True
         
         moveDir = 0
         if self.velocity.x:
@@ -60,6 +75,11 @@ class Player(Entity):
                 self.velocity.x = min(self.velocity.x, 0)
 
         super().update(delta, collisionRects, chunks)
+
+        if self.velocity.x == 0:
+            self.imgCycleAnim.speed = 0.125
+        else:
+            self.imgCycleAnim.speed = 0.25 * (self.maxSpeed / abs(self.velocity.x))
 
         self.jumpPressTimer -= delta
         self.groundTimer -= delta

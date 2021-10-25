@@ -18,8 +18,7 @@ class TestScreen(GameScreen):
 
         self.player = Player(20, 100, 12, 12)
 
-        self.pumpkinImg = pygame.image.load("data/images/pumpkins/Base Pumpkin.png").convert()
-        self.pumpkinImg.set_colorkey((0,0,0))
+        self.pumpkinImg = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))[0]
         self.pumpkins = []
 
         self.text = Text()
@@ -71,9 +70,12 @@ class TestScreen(GameScreen):
         for p in self.pumpkins:
             p.update(delta, entityRects, self.tilemap.chunks)
 
+            if p.stopping:
+                p.stopping = False
+                self.pumpkins.sort(key=lambda p:(p.rect.x, p.rect.y))
+
         if inp.keyJustPressed(pygame.K_x):
             self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImg))
-            self.pumpkins.sort(key=lambda p:p.rect.y)
             
             self.player.reset()
 

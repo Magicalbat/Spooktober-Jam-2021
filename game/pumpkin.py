@@ -14,6 +14,8 @@ class Pumpkin(Entity):
         self.applyGravity = True
         self.handleCollision = True
 
+        self.stopping = False
+
         self.img = img
     
     def draw(self, win, scroll=(0,0)):
@@ -27,6 +29,8 @@ class Pumpkin(Entity):
         super().update(delta, rects, chunks)
 
         if self.velocity.y == 0:
+            self.stopping = True
+
             self.applyGravity = False
             self.handleCollision = False
 
