@@ -5,7 +5,7 @@ import copy
 from engine.entity import Entity
 
 class Pumpkin(Entity):
-    def __init__(self, x, y, width, height, startVel, gravity):
+    def __init__(self, x, y, width, height, startVel, gravity, img):
         super().__init__(x, y, width, height, (0,255,0))
 
         self.velocity = copy.deepcopy(startVel)
@@ -13,6 +13,12 @@ class Pumpkin(Entity):
 
         self.applyGravity = True
         self.handleCollision = True
+
+        self.img = img
+    
+    def draw(self, win, scroll=(0,0)):
+        #super().drawRect(win, scroll)
+        win.blit(self.img, (self.rect.x - scroll[0] - 1, self.rect.y - scroll[1] - 2))
     
     def update(self, delta, collisionRects=None, chunks=None):
         rects = copy.deepcopy(collisionRects)

@@ -18,6 +18,8 @@ class TestScreen(GameScreen):
 
         self.player = Player(20, 100, 12, 12)
 
+        self.pumpkinImg = pygame.image.load("data/images/pumpkins/Base Pumpkin.png").convert()
+        self.pumpkinImg.set_colorkey((0,0,0))
         self.pumpkins = []
 
         self.text = Text()
@@ -44,10 +46,10 @@ class TestScreen(GameScreen):
         self.tilemap.draw(win, self.scroll)
         #self.particles.draw(win)
 
-        self.player.drawRect(win, self.scroll)
+        self.player.draw(win, self.scroll)
         
         for p in self.pumpkins:
-            p.drawRect(win, self.scroll)
+            p.draw(win, self.scroll)
 
         win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
         
@@ -70,7 +72,8 @@ class TestScreen(GameScreen):
             p.update(delta, entityRects, self.tilemap.chunks)
 
         if inp.keyJustPressed(pygame.K_x):
-            self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity))
+            self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImg))
+            self.pumpkins.sort(key=lambda p:p.rect.y)
             
             self.player.reset()
 

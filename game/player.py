@@ -10,6 +10,9 @@ class Player(Entity):
 
         self.startPos = copy.deepcopy(self.pos)
 
+        self.img = pygame.image.load("data/images/pumpkins/Base Pumpkin.png").convert()
+        self.img.set_colorkey((0,0,0))
+
         self.maxSpeed = 12 * 5
         self.accel = 12
         self.friction = 14
@@ -27,6 +30,11 @@ class Player(Entity):
 
         self.applyGravity = True
         self.handleCollision = True
+    
+    def draw(self, win, scroll=(0,0)):
+        win.blit(self.img, (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
+        #pygame.draw.rect(win, (255,0,0), self.rect, width=1)
+        #super().drawRect(win, scroll)
     
     def update(self, delta, inp, collisionRects=None, chunks=None):
         accelerating = False
