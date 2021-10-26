@@ -26,7 +26,10 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         
+        win.fill((200,200,200))
         screenManger.draw(win)
+        pygame.display.update()
+
         screenManger.update(clock.get_time() / 1000)
         
     pygame.quit()

@@ -1,3 +1,5 @@
+import pygame
+
 from engine.gamescreen import GameScreen
 from engine.input import Input
 
@@ -6,6 +8,9 @@ class ScreenManager:
         self.currentScreen = startScreen
         self.currentScreen.load(self)
         self.inp = Input()
+
+        self.triangleWipe = pygame.image.load("data/images/transitions/Triangle Wipe.png").convert()
+        self.triangleWipe.set_colorkey((0,0,0))
     
     def draw(self, win):
         self.currentScreen.draw(win)

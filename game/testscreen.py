@@ -33,14 +33,10 @@ class TestScreen(GameScreen):
 
     def draw(self, win):
         self.scroll[0] += ((self.player.pos.x - win.get_width() / 2) - self.scroll[0]) / 20
-        
         self.scroll[0] = clamp(self.scroll[0], self.cameraBounds[0][0], self.cameraBounds[0][1])
         
         self.scroll[1] += ((self.player.pos.y - win.get_height() / 2) - self.scroll[1]) / 20
-        
         self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[1][0], self.cameraBounds[1][1])
-
-        win.fill((200,200,200))
 
         self.tilemap.draw(win, self.scroll)
         #self.particles.draw(win)
@@ -51,8 +47,6 @@ class TestScreen(GameScreen):
             p.draw(win, self.scroll)
 
         win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
-        
-        pygame.display.update()
 
     def update(self, delta, inp, fps=0):
         #self.particles.update(delta, self.tilemap.drawTiles, 1, 12)
