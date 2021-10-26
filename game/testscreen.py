@@ -35,11 +35,11 @@ class TestScreen(GameScreen):
         #self.particles = Particles([8, 12], [-.1, .1, -.1, .1], [-25, 25, -45, -50], 1000, True, 4, 144, startCol=(0, 128, 128), endCol=(255, 255, 255))
 
     def draw(self, win):
-        self.scroll[0] += ((self.player.pos.x - win.get_width() / 2) - self.scroll[0]) / 20
-        self.scroll[0] = clamp(self.scroll[0], self.cameraBounds[0][0], self.cameraBounds[0][1])
+        #self.scroll[0] += ((self.player.pos.x - win.get_width() / 2) - self.scroll[0]) / 20
+        #self.scroll[0] = clamp(self.scroll[0], self.cameraBounds[0][0], self.cameraBounds[0][1])
         
-        self.scroll[1] += ((self.player.pos.y - win.get_height() / 2) - self.scroll[1]) / 20
-        self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[1][0], self.cameraBounds[1][1])
+        #self.scroll[1] += ((self.player.pos.y - win.get_height() / 2) - self.scroll[1]) / 20
+        #self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[1][0], self.cameraBounds[1][1])
 
         self.tilemap.draw(win, self.scroll)
         #self.particles.draw(win)
@@ -82,7 +82,7 @@ class TestScreen(GameScreen):
                 self.pumpkins.remove(rect)
 
         if inp.keyJustPressed(pygame.K_r):
-            self.screenManager.reloadCurrentScreen()
+            self.screenManager.reloadCurrentScreenWithTransition()
 
         #mousePos = pygame.mouse.get_pos()
         #self.particles.emit(mousePos, 2)

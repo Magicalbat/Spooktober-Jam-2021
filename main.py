@@ -15,8 +15,9 @@ def main():
 
     from engine.screenmanager import ScreenManager
     from game.testscreen import TestScreen
+    from game.startscreen import StartScreen
 
-    screenManger = ScreenManager(TestScreen())
+    screenManger = ScreenManager(StartScreen())
 
     running = True
     while running:
