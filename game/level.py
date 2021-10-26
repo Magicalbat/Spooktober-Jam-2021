@@ -10,18 +10,23 @@ from engine.common import *
 from game.player import Player
 from game.pumpkin import Pumpkin
 
-class TestScreen(GameScreen):
+class Level(GameScreen):
     def setup(self):
         super().setup()
 
         self.tilemap = Tilemap(12)
-        extraMapData = self.tilemap.loadFromJson("data/maps/really_bad_map.json", True)
+        extraMapData = self.tilemap.loadFromJson(f"data/maps/level{self.levelNum}.json", True)
 
         playerSpawn = [20,100]
         if 'playerSpawn' in extraMapData:
             playerSpawn = extraMapData['playerSpawn']
 
         self.player = Player(playerSpawn[0], playerSpawn[1], 12, 12)
+
+        if 'levelExit' in extraMapData:
+            self.levelExit = pygame.Rect((extraMapData['levelExit'][0], extraMapData['levelExit'][1], 12, 12))
+        else:
+            self.levelExit = pygame.Rect((0,0,0,0))
 
         self.pumpkinImgs = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
         self.pumpkinImgs = [self.pumpkinImgs[0], self.pumpkinImgs[4], self.pumpkinImgs[5]]
@@ -34,13 +39,17 @@ class TestScreen(GameScreen):
 
         self.scroll = [0,0]
         self.cameraBounds = ((0,0),(0,0))
+    
+    def __init__(self, levelNum=1):
+        self.levelNum = levelNum
+        super().__init__()
 
     def draw(self, win):
-        #self.scroll[0] += ((self.player.pos.x - win.get_width() / 2) - self.scroll[0]) / 20
-        #self.scroll[0] = clamp(self.scroll[0], self.cameraBounds[0][0], self.cameraBounds[0][1])
+        self.scroll[0] += ((self.player.pos.x - win.get_width() / 2) - self.scroll[0]) / 20
+        self.scroll[0] = clamp(self.scroll[0], self.cameraBounds[0][0], self.cameraBounds[0][1])
         
-        #self.scroll[1] += ((self.player.pos.y - win.get_height() / 2) - self.scroll[1]) / 20
-        #self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[1][0], self.cameraBounds[1][1])
+        self.scroll[1] += ((self.player.pos.y - win.get_height() / 2) - self.scroll[1]) / 20
+        self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[1][0], self.cameraBounds[1][1])
 
         self.tilemap.draw(win, self.scroll)
 
@@ -48,6 +57,8 @@ class TestScreen(GameScreen):
         
         for p in self.pumpkins:
             p.draw(win, self.scroll)
+
+        pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
 
         win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
 
@@ -78,6 +89,10 @@ class TestScreen(GameScreen):
             
             for rect in hitlist:
                 self.pumpkins.remove(rect)
+        
+        if self.player.rect.colliderect(self.levelExit):
+            from game.startscreen import StartScreen
+            self.screenManager.changeScreenWithTransition(Level(self.levelNum + 1))
 
         if inp.keyJustPressed(pygame.K_r):
             self.screenManager.reloadCurrentScreenWithTransition()

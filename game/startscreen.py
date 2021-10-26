@@ -3,7 +3,7 @@ import sys
 import pygame
 
 from engine.gamescreen import GameScreen
-from game.testscreen import TestScreen
+from game.level import Level
 from engine.menu import Menu
 
 class StartScreen(GameScreen):
@@ -16,7 +16,7 @@ class StartScreen(GameScreen):
 
     def load(self, screenManager):
         GameScreen.load(self, screenManager)
-        self.menu = Menu(["Start", "Options", "Exit"], 4, (0, 50), (25, 25), {0:screenManager.changeScreenWithTransition, 2:self.quit}, {0:TestScreen()})
+        self.menu = Menu(["Start", "Options", "Exit"], 4, (0, 50), (25, 25), {0:screenManager.changeScreenWithTransition, 2:self.quit}, {0:Level()})
 
     def draw(self, win):
         self.menu.draw(win)

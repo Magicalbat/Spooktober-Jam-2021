@@ -14,10 +14,10 @@ def main():
     fps = 60
 
     from engine.screenmanager import ScreenManager
-    from game.testscreen import TestScreen
     from game.startscreen import StartScreen
+    from game.level import Level
 
-    screenManger = ScreenManager(StartScreen())
+    screenManger = ScreenManager(Level())
 
     running = True
     while running:

@@ -93,8 +93,11 @@ class Tilemap:
 
         if loadTileImgs:
             self.loadTileImgs(jsonData['imgData']['path'], jsonData['imgData']['tilesDim'], jsonData['imgData']['padding'], jsonData['imgData']['count'], jsonData['imgData']['colorKey'])
+
+            jsonData.pop('imgData')
         
         self.tileSize = jsonData['tileSize']
+        jsonData.pop('tileSize')
         
         self.drawTiles = []
         for i in range(len(jsonData['drawTiles'])):
@@ -102,6 +105,7 @@ class Tilemap:
             for key in jsonData['drawTiles'][i].keys():
                 splitKey = key.split(';')
                 self.drawTiles[i][(int(splitKey[0]), int(splitKey[1]))] = jsonData['drawTiles'][i][key]
+        jsonData.pop('drawTiles')
 
         self.chunks = {
             'tileSize' : jsonData['chunks']['tileSize'],
@@ -115,6 +119,9 @@ class Tilemap:
             
                 key = key.split(';')
                 self.chunks[(int(key[0]), int(key[1]))] = chunk
+        jsonData.pop('chunks')
+
+        return jsonData
 
     def saveToJson(self, path, writeFile=True):
         newChunks = {

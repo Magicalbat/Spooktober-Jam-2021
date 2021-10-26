@@ -1,5 +1,7 @@
 import pygame
 
+import copy
+
 from engine.gamescreen import GameScreen
 from engine.input import Input
 from engine.animation import Animation
@@ -13,7 +15,7 @@ class ScreenManager:
         self.triangleWipe = pygame.image.load("data/images/transitions/Triangle Wipe.png").convert()
         self.triangleWipe.set_colorkey((0,0,0))
         
-        self.screenWipeAnim = Animation([-320, 0, -320], 320 * 3, "Stop Restart", True, False)
+        self.screenWipeAnim = Animation([-320, 0, -320], 960, "Stop Restart", True, False)
         self.nextScreen = None
         self.reloadingCurrent = False
     
@@ -24,12 +26,13 @@ class ScreenManager:
             win.blit(self.triangleWipe, (self.screenWipeAnim.value, 0))
 
     def update(self, delta):
+        
         self.inp.update()
         self.screenWipeAnim.update(delta)
 
         if not self.screenWipeAnim.active:
             self.currentScreen.update(delta, self.inp)
-        elif abs(self.screenWipeAnim.value) < 10:
+        elif abs(self.screenWipeAnim.value) < 10 and self.screenWipeAnim.index == 2:
             if self.reloadingCurrent:
                 self.reloadCurrentScreen()
                 self.reloadingCurrent = False
@@ -42,14 +45,18 @@ class ScreenManager:
         self.currentScreen = newScreen
         self.currentScreen.load(self)
     
-    def changeScreenWithTransition(self, newScreen):
+    def changeScreenWithTransition(self, newScreen, speed=960):
         self.nextScreen = newScreen
+
+        self.screenWipeAnim.speed = speed
         self.screenWipeAnim.start()
     
     def reloadCurrentScreen(self):
         self.currentScreen.setup()
         self.currentScreen.load(self)
     
-    def reloadCurrentScreenWithTransition(self):
+    def reloadCurrentScreenWithTransition(self, speed=1280):
         self.reloadingCurrent = True
+        
+        self.screenWipeAnim.speed = speed
         self.screenWipeAnim.start()

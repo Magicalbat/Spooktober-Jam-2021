@@ -9,6 +9,8 @@ pygame.display.set_caption('Level Editor')
 clock = pygame.time.Clock()
 fps = 60
 
+import json, time
+
 from engine.common import *
 from engine.input import Input
 from engine.tilemap import Tilemap
@@ -17,7 +19,7 @@ tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
-tilemap.loadFromJson("data/maps/really_bad_map.json", True)
+tilemap.loadFromJson("data/maps/level1.json", True)
 
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
@@ -172,7 +174,62 @@ while mainRunning:
     win.blit(font.render(f"{currentLayer}", False, (255,255,255)), (16, 0))
 
     pygame.display.update()
-    
+
 tilemap.generateCollision({i + 1 for i in range(15)}, True)
-tilemap.saveToJson("data/maps/test.json", False)
+tilemapData = tilemap.saveToJson("data/maps/test.json", False)
+
+print("Click on player spawn :)")
+
+mousePos = pygame.mouse.get_pos()
+mousePos = list(mousePos)
+
+mousePos[0] = int((mousePos[0] + scroll[0]) / tileSize)# * tileSize
+mousePos[1] = int((mousePos[1] + scroll[1]) / tileSize)# * tileSize
+#(int(mousePos[0] / tileSize), int(mousePos[1] / tileSize))
+
+while not inp.mouseJustPressed(0):
+    mousePos = pygame.mouse.get_pos()
+    mousePos = list(mousePos)
+
+    mousePos[0] = int((mousePos[0] + scroll[0]) / tileSize) * tileSize
+    mousePos[1] = int((mousePos[1] + scroll[1]) / tileSize) * tileSize
+
+    for event in pygame.event.get():
+        pass
+
+    inp.update()
+
+tilemapData['playerSpawn'] = mousePos
+
+print("Click on level exit :))))))))")
+
+time.sleep(0.5)
+inp.update()
+inp.update()
+
+mousePos = pygame.mouse.get_pos()
+mousePos = list(mousePos)
+
+mousePos[0] = int((mousePos[0] + scroll[0]) / tileSize)# * tileSize
+mousePos[1] = int((mousePos[1] + scroll[1]) / tileSize)# * tileSize
+#(int(mousePos[0] / tileSize), int(mousePos[1] / tileSize))
+
+while not inp.mouseJustPressed(0):
+    mousePos = pygame.mouse.get_pos()
+    mousePos = list(mousePos)
+
+    mousePos[0] = int((mousePos[0] + scroll[0]) / tileSize) * tileSize
+    mousePos[1] = int((mousePos[1] + scroll[1]) / tileSize) * tileSize
+
+    for event in pygame.event.get():
+        pass
+
+    inp.update()
+
+tilemapData['levelExit'] = mousePos
+
+if False:
+    with open("data/maps/level1.json", 'w') as f:
+        f.write(json.dumps(tilemapData, indent=4))
+
 pygame.quit()

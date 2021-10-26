@@ -18,7 +18,7 @@ class Player(Entity):
         self.imgJumpCycleAnim = Animation([0,2], 4, realTime=True)
         self.flipped = False
 
-        self.maxSpeed = 12 * 5
+        self.maxSpeed = 12 * 5.5
         self.accel = 12
         self.friction = 14
 
@@ -40,11 +40,11 @@ class Player(Entity):
     
     def draw(self, win, scroll=(0,0)):
         if self.collisionTypes['bottom'] or self.velocity.y == 0:
-            win.blit(pygame.transform.flip(self.imgs[0 + int(self.imgGroundCycleAnim.value)], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
-            win.blit(pygame.transform.flip(self.imgs[6 + self.groundEyeFrames[int(self.imgGroundCycleAnim.value)]], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
+            win.blit(pygame.transform.flip(self.imgs[0 + int(self.imgGroundCycleAnim.value)], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[1] - 2))
+            win.blit(pygame.transform.flip(self.imgs[6 + self.groundEyeFrames[int(self.imgGroundCycleAnim.value)]], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[1] - 2))
         else:
-            win.blit(pygame.transform.flip(self.imgs[4 + int(self.imgJumpCycleAnim.value)], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
-            win.blit(pygame.transform.flip(self.imgs[6], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[0] - 2))
+            win.blit(pygame.transform.flip(self.imgs[4 + int(self.imgJumpCycleAnim.value)], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[1] - 2))
+            win.blit(pygame.transform.flip(self.imgs[6], self.flipped, False), (self.rect.x - scroll[0] - 1, self.rect.y - scroll[1] - 2))
         #pygame.draw.rect(win, (255,0,0), self.rect, width=1)
         #super().drawRect(win, scroll)
     
