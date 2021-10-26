@@ -7,7 +7,7 @@ def main():
 
     width = 320
     height = 180
-    win = pygame.display.set_mode((width, height), pygame.SCALED | pygame.RESIZABLE)
+    win = pygame.display.set_mode((width, height), pygame.SCALED | pygame.RESIZABLE, 8)
     pygame.display.set_caption('Spooktober Jam 2021')
 
     clock = pygame.time.Clock()
@@ -17,7 +17,7 @@ def main():
     from game.startscreen import StartScreen
     from game.level import Level
 
-    screenManger = ScreenManager(Level())
+    screenManger = ScreenManager(StartScreen())
 
     running = True
     while running:

@@ -55,13 +55,13 @@ def changeState(newState):
     editState = newState
 
     if newState == "Pencil":
-        setCursorFromTxt("data/level editor/pencil.txt")
+        setCursorFromTxt("levelEditor/data/pencil.txt")
     elif newState == "Box Select":
-        setCursorFromTxt("data/level editor/box select.txt")
+        setCursorFromTxt("levelEditor/data/box select.txt")
     elif newState == "Bucket":
-        setCursorFromTxt("data/level editor/bucket.txt")
+        setCursorFromTxt("levelEditor/data/bucket.txt")
     elif newState == "Color Picker":
-        setCursorFromTxt("data/level editor/color picker.txt")
+        setCursorFromTxt("levelEditor/data/color picker.txt")
 
 changeState("Pencil")
 inp = Input()

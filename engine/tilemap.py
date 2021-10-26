@@ -166,7 +166,8 @@ class Tilemap:
                     #pStr = pStr.split(';')
                     pos = key#(int(pStr[0]) * self.tileSize + offset[0], int(pStr[1]) * self.tileSize + offset[1])
 
-                    layerSurf.blit(self.tileImgs[i], (pos[0] * self.tileSize + offset[0] - scroll[0], pos[1] * self.tileSize + offset[1] - scroll[1]))
+                    if pos[0] * self.tileSize - scroll[0] > -self.tileSize and pos[0] * self.tileSize - scroll[0] < win.get_width() and pos[1] * self.tileSize - scroll[1] > -self.tileSize and pos[1] * self.tileSize - scroll[1] < win.get_height():
+                        layerSurf.blit(self.tileImgs[i], (pos[0] * self.tileSize + offset[0] - scroll[0], pos[1] * self.tileSize + offset[1] - scroll[1]))
             if highlightLayer != None and l != highlightLayer:
                 layerSurf.set_alpha(255 - ((abs(l - highlightLayer) % len(self.drawTiles) / (len(self.drawTiles) - 1)) * 128 + 64))
             win.blit(layerSurf, (0,0))
