@@ -13,9 +13,9 @@ class Player(Entity):
         self.startPos = copy.deepcopy(self.pos)
 
         self.imgs = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
-        self.imgGroundCycleAnim = Animation([0,4], .125)
+        self.imgGroundCycleAnim = Animation([0,4], 8, realTime=True)
         self.groundEyeFrames = [0,1,1,0]
-        self.imgJumpCycleAnim = Animation([0,2], .125)
+        self.imgJumpCycleAnim = Animation([0,2], 4, realTime=True)
         self.flipped = False
 
         self.maxSpeed = 12 * 5
@@ -35,6 +35,8 @@ class Player(Entity):
 
         self.applyGravity = True
         self.handleCollision = True
+
+        self.theta = 0
     
     def draw(self, win, scroll=(0,0)):
         if self.collisionTypes['bottom'] or self.velocity.y == 0:
@@ -47,6 +49,7 @@ class Player(Entity):
         #super().drawRect(win, scroll)
     
     def update(self, delta, inp, collisionRects=None, chunks=None):
+
         accelerating = False
 
         rightPressed = inp.keyDown(pygame.K_RIGHT)
@@ -84,16 +87,16 @@ class Player(Entity):
             self.imgGroundCycleAnim.update(delta)
 
             if self.velocity.x == 0:
-                self.imgGroundCycleAnim.speed = 0.125
+                self.imgGroundCycleAnim.speed = 6
             else:
-                self.imgGroundCycleAnim.speed = 0.25 * (self.maxSpeed / abs(self.velocity.x))
+                self.imgGroundCycleAnim.speed = 12 * (self.maxSpeed / abs(self.velocity.x))
         elif self.velocity.y != 0:
             self.imgJumpCycleAnim.update(delta)
 
             if self.velocity.x == 0:
-                self.imgJumpCycleAnim.speed = 0.0625
+                self.imgJumpCycleAnim.speed = 2
             else:
-                self.imgJumpCycleAnim.speed = 0.125 * (self.maxSpeed / abs(self.velocity.x))
+                self.imgJumpCycleAnim.speed = 6 * (self.maxSpeed / abs(self.velocity.x))
 
         self.jumpPressTimer -= delta
         self.groundTimer -= delta

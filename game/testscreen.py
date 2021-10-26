@@ -1,5 +1,7 @@
 import pygame
 
+import random
+
 from engine.gamescreen import GameScreen
 from engine.tilemap import Tilemap
 from engine.particles import Particles
@@ -18,7 +20,8 @@ class TestScreen(GameScreen):
 
         self.player = Player(20, 100, 12, 12)
 
-        self.pumpkinImg = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))[0]
+        self.pumpkinImgs = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
+        self.pumpkinImgs = [self.pumpkinImgs[0], self.pumpkinImgs[4], self.pumpkinImgs[5]]
         self.pumpkins = []
 
         self.text = Text()
@@ -69,7 +72,7 @@ class TestScreen(GameScreen):
                 self.pumpkins.sort(key=lambda p:(p.rect.x, p.rect.y))
 
         if inp.keyJustPressed(pygame.K_x):
-            self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImg))
+            self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImgs[random.randint(0,2)]))
             
             self.player.reset()
 
