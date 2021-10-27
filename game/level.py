@@ -15,7 +15,8 @@ class Level(GameScreen):
         super().setup()
 
         self.tilemap = Tilemap(12)
-        extraMapData = self.tilemap.loadFromJson(f"data/maps/level{self.levelNum}.json", True)
+        extraMapData = self.tilemap.loadFromJson(f"data/maps/test.json", True)
+        #level{self.levelNum}.json
 
         playerSpawn = [20,100]
         if 'playerSpawn' in extraMapData:
@@ -27,6 +28,12 @@ class Level(GameScreen):
             self.levelExit = pygame.Rect((extraMapData['levelExit'][0][0], extraMapData['levelExit'][0][1], 12, 12))
         else:
             self.levelExit = pygame.Rect((0,0,0,0))
+        
+        #spikes are going to be 4 pixels tall
+        self.spikes = []
+        if 'spikes' in extraMapData:
+            for pos in extraMapData['spikes']:
+                self.spikes.append(pygame.Rect((pos[0], pos[1] + 8, 12, 4)))
 
         self.pumpkinImgs = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
         self.pumpkinImgs = [self.pumpkinImgs[0], self.pumpkinImgs[4], self.pumpkinImgs[5]]
@@ -57,6 +64,9 @@ class Level(GameScreen):
         
         for p in self.pumpkins:
             p.draw(win, self.scroll)
+        
+        for s in self.spikes:
+            pygame.draw.rect(win, (255,0,0), s)
 
         pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
 
@@ -90,6 +100,9 @@ class Level(GameScreen):
             for rect in hitlist:
                 self.pumpkins.remove(rect)
         
+        if self.player.rect.collidelist(self.spikes) != -1:
+            self.player.reset()
+
         if self.player.rect.colliderect(self.levelExit):
             from game.startscreen import StartScreen
             self.screenManager.changeScreenWithTransition(Level(self.levelNum + 1))

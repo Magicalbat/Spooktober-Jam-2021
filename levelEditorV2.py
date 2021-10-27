@@ -77,7 +77,7 @@ text.loadFontImg("data/images/text.png")#, scale=(2,2))
 
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
-extraDataKeys = ['playerSpawn', 'levelExit']
+extraDataKeys = ['playerSpawn', 'levelExit', 'spikes']
 extraData = {key : [] for key in extraDataKeys}
 
 for key, value in loadedExtraData.items():
@@ -285,7 +285,7 @@ for key, value in extraData.items():
     tilemapData[key] = value
 
 if False:
-    with open("data/maps/level1.json", 'w') as f:
+    with open("data/maps/test.json", 'w') as f:
         f.write(json.dumps(tilemapData, indent=4))
 
 pygame.quit()
