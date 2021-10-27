@@ -46,17 +46,23 @@ class Level(GameScreen):
 
         self.scroll = [0,0]
         self.cameraBounds = ((0,0),(0,0))
+        if 'cameraBounds' in extraMapData:
+            if len(extraMapData['cameraBounds']) == 1:
+                self.cameraBound = ((0,0), extraMapData['cameraBounds'][0])
+            else:
+                self.cameraBounds = (extraMapData['cameraBounds'][0], extraMapData['cameraBounds'][1])
     
     def __init__(self, levelNum=1):
         self.levelNum = levelNum
         super().__init__()
 
     def draw(self, win):
+        #if abs(((self.player.pos.x - win.get_width() / 2) - self.scroll[0]) - self.scroll[0]) > 25:
         self.scroll[0] += ((self.player.pos.x - win.get_width() / 2) - self.scroll[0]) / 20
-        self.scroll[0] = clamp(self.scroll[0], self.cameraBounds[0][0], self.cameraBounds[0][1])
+        self.scroll[0] = clamp(self.scroll[0], self.cameraBounds[0][0], self.cameraBounds[1][0])
         
         self.scroll[1] += ((self.player.pos.y - win.get_height() / 2) - self.scroll[1]) / 20
-        self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[1][0], self.cameraBounds[1][1])
+        self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[0][1], self.cameraBounds[1][1])
 
         self.tilemap.draw(win, self.scroll)
 
@@ -66,7 +72,7 @@ class Level(GameScreen):
             p.draw(win, self.scroll)
         
         for s in self.spikes:
-            pygame.draw.rect(win, (255,0,0), s)
+            pygame.draw.rect(win, (255,0,0), (s.x - self.scroll[0], s.y - self.scroll[1], s.w, s.h))
 
         pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
 
