@@ -123,7 +123,7 @@ class Tilemap:
 
         return jsonData
 
-    def saveToJson(self, path, writeFile=True):
+    def saveToJson(self, path=None, writeFile=True):
         newChunks = {
             'tileSize' : self.chunks['tileSize'],
             'chunkSize' : self.chunks['chunkSize']
@@ -148,7 +148,7 @@ class Tilemap:
             for key, item in self.drawTiles[i].items():
                 jsonData['drawTiles'][i][f"{int(key[0])};{int(key[1])}"] = item
         
-        if writeFile:
+        if writeFile and path is not None:
             with open(path, 'w') as f:
                 f.write(json.dumps(jsonData, indent=4))
         

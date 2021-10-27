@@ -19,12 +19,12 @@ class Level(GameScreen):
 
         playerSpawn = [20,100]
         if 'playerSpawn' in extraMapData:
-            playerSpawn = extraMapData['playerSpawn']
+            playerSpawn = extraMapData['playerSpawn'][0]
 
         self.player = Player(playerSpawn[0], playerSpawn[1], 12, 12)
 
         if 'levelExit' in extraMapData:
-            self.levelExit = pygame.Rect((extraMapData['levelExit'][0], extraMapData['levelExit'][1], 12, 12))
+            self.levelExit = pygame.Rect((extraMapData['levelExit'][0][0], extraMapData['levelExit'][0][1], 12, 12))
         else:
             self.levelExit = pygame.Rect((0,0,0,0))
 

@@ -12,7 +12,7 @@ pygame.display.set_caption("Level Editor V2")
 clock = pygame.time.Clock()
 fps = 60
 
-import enum
+import enum, json
 
 from engine.common import *
 from engine.input import Input
@@ -30,13 +30,13 @@ class States(enum.Enum):
 def changeCursor(cursorState):
     if changeCursor:
         if cursorState == States.PENCIL:
-            setCursorFromTxt("levelEditor/data/pencil.txt")
+            setCursorFromTxt("data/levelEditor/pencil.txt")
         elif cursorState == States.BOX_SELECT:
-            setCursorFromTxt("levelEditor/data/box select.txt")
+            setCursorFromTxt("data/levelEditor/box select.txt")
         elif cursorState == States.BUCKET:
-            setCursorFromTxt("levelEditor/data/bucket.txt")
+            setCursorFromTxt("data/levelEditor/bucket.txt")
         elif cursorState == States.COLOR_PICKER:
-            setCursorFromTxt("levelEditor/data/color picker.txt")
+            setCursorFromTxt("data/levelEditor/color picker.txt")
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
@@ -44,7 +44,7 @@ tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
-tilemap.loadFromJson("data/maps/level1.json", True)
+loadedExtraData = tilemap.loadFromJson("data/maps/level1.json", True)
 
 currentLayer = 0
 editState = States.PENCIL
@@ -78,8 +78,14 @@ text.loadFontImg("data/images/text.png")#, scale=(2,2))
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
 extraDataKeys = ['playerSpawn', 'levelExit']
-extraData = {key : [0,0] for key in extraDataKeys}
+extraData = {key : [] for key in extraDataKeys}
+
+for key, value in loadedExtraData.items():
+    if key in extraData:
+        extraData[key] = value
+
 extraDataImgs = []
+extraDataAlphaImgs = []
 colors = [(255,0,0), (0,255,0), (0,0,255)]
 
 selectedExtraData = 0
@@ -90,7 +96,11 @@ for i, key in enumerate(extraDataKeys):
 
     img.blit(text.createTextSurf(key[0].upper()), (0,0))
 
-    extraDataImgs.append(img)
+    extraDataImgs.append(img.copy())
+
+    img.set_alpha(128)
+
+    extraDataAlphaImgs.append(img.copy())
 
 sbWidth = int(tileSize * 5) # sidebar width
 sidebar = pygame.Surface((sbWidth, height))
@@ -212,11 +222,15 @@ while running:
                     editState = States.PENCIL
                     changeCursor(States.PENCIL)
         elif editState == States.EXTRA_DATA:
-            if inp.mouseJustPressed(0):
-                extraData[extraDataKeys[selectedExtraData]] = (scrolledTileMousePos[0] * tileSize, scrolledTileMousePos[1] * tileSize)
-            if inp.mouseJustPressed(2):
+            if inp.mouseDown(0):
+                dataPos = (scrolledTileMousePos[0] * tileSize, scrolledTileMousePos[1] * tileSize)
+                if dataPos not in extraData[extraDataKeys[selectedExtraData]]: 
+                    extraData[extraDataKeys[selectedExtraData]].append(dataPos)
+            if inp.mouseJustPressed(1) or inp.keyJustPressed(pygame.K_c):
                 selectedExtraData += 1
                 selectedExtraData %= len(extraDataKeys)
+            if inp.mouseDown(2) or inp.keyDown(pygame.K_x):
+                extraData[extraDataKeys[selectedExtraData]] = [i for i in extraData[extraDataKeys[selectedExtraData]] if i != (scrolledTileMousePos[0] * tileSize, scrolledTileMousePos[1] * tileSize)]
 
     # WIN DRAW =========================================
     win.fill((200,200,200))
@@ -232,12 +246,13 @@ while running:
         #tileRect = pygame.Rect((min(selectionTilePos1[0], selectionTilePos2[0]), min(selectionTilePos1[1], selectionTilePos2[1]), abs(selectionTilePos2[0] - selectionTilePos1[0]), abs(selectionTilePos2[1] - selectionTilePos1[1])))
         #screenPos1 = ((selectionTilePos1[0] * tileSize) - scroll[0], (selectionTilePos1[1] * tileSize) - scroll[1])
     elif editState == States.EXTRA_DATA:
-        win.blit(extraDataImgs[selectedExtraData], (drawMousePos[0], drawMousePos[1]))
+        win.blit(extraDataAlphaImgs[selectedExtraData], (drawMousePos[0], drawMousePos[1]))
     
     for i in range(len(extraDataKeys)):
-        drawPos = (extraData[extraDataKeys[i]][0] - scroll[0], extraData[extraDataKeys[i]][1] - scroll[1])
-        if drawPos != (0,0):
-            win.blit(extraDataImgs[i], drawPos)
+        for j in range(len(extraData[extraDataKeys[i]])):
+            drawPos = (extraData[extraDataKeys[i]][j][0] - scroll[0], extraData[extraDataKeys[i]][j][1] - scroll[1])
+            if drawPos != (0,0):
+                win.blit(extraDataAlphaImgs[i], drawPos)
 
     if editState != States.BOX_SELECT and editState != States.EXTRA_DATA:
         pygame.draw.rect(win, (0,245,255), (drawMousePos[0] - 1, drawMousePos[1] - 1, tileSize+2, tileSize+2), width=1)
@@ -262,5 +277,15 @@ while running:
     screen.blit(win, (sbWidth, 0))
     screen.blit(sidebar, (0,0))
     pygame.display.update()
+
+tilemap.generateCollision({i + 1 for i in range(15)}, True)
+tilemapData = tilemap.saveToJson()
+
+for key, value in extraData.items():
+    tilemapData[key] = value
+
+if False:
+    with open("data/maps/level1.json", 'w') as f:
+        f.write(json.dumps(tilemapData, indent=4))
 
 pygame.quit()
