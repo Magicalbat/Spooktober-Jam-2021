@@ -71,6 +71,17 @@ class Entity:
         for chunk in testChunks:
             self.addChunkFromChunkPos(chunk, chunks, collisionRects)
 
+    def updateRect(self):
+        if self.velocity.x > 0:
+            self.rect.x = math.ceil(self.pos.x)
+        else:
+            self.rect.x = int(self.pos.x)
+        
+        if self.velocity.y > 0:
+            self.rect.y = math.ceil(self.pos.y)
+        else:
+            self.rect.y = int(self.pos.y)
+
     def update(self, delta, collisionRects=None, chunks=None):
         if collisionRects is None:
             collisionRects = []
@@ -80,8 +91,11 @@ class Entity:
             self.velocity[1] += self.gravity * delta
 
         if self.applyVelocity and not self.handleCollision:
-            self.rect.x += self.velocity[0]
-            self.rect.y += self.velocity[1]
+            self.pos.x += self.velocity.x * delta
+            
+            self.pos.y += self.velocity.y * delta
+
+            self.updateRect()
 
         if self.handleCollision:
             self.collisionTypes = {'top': False, 'bottom': False, 'right': False, 'left': False}
@@ -90,11 +104,7 @@ class Entity:
                 self.getChunksWithMove(self.velocity * delta, chunks, collisionRects)
 
             self.pos.x += self.velocity.x * delta
-            
-            if self.velocity.x > 0:
-                self.rect.x = math.ceil(self.pos.x)
-            else:
-                self.rect.x = int(self.pos.x)
+            self.updateRect()
 
             hitlist = getCollidingRects(self.rect, collisionRects)
 
@@ -111,11 +121,7 @@ class Entity:
                     self.collisionTypes['left'] = True
             
             self.pos.y += self.velocity.y * delta
-            
-            if self.velocity.y > 0:
-                self.rect.y = math.ceil(self.pos.y)
-            else:
-                self.rect.y = int(self.pos.y)
+            self.updateRect()
 
             hitlist = getCollidingRects(self.rect, collisionRects)
 

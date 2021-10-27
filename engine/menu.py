@@ -18,6 +18,7 @@ class Menu:
 
         self.imgText = Text()
         self.imgText.loadFontImg("data/images/text.png", scale=(fontScale, fontScale), color=self.color)
+        self.fontScale = fontScale
 
         self.lineAnim = Animation([0, 1], repeat="Stop", realTime=True)
         self.changeSelected(0)
@@ -36,8 +37,8 @@ class Menu:
             if i == self.selected:
                 textSize = self.imgText.measureText(self.texts[i])
                 pygame.draw.line(
-                    win, self.color, (pos[0], pos[1] + textSize[1] - 6),
-                    (pos[0] + self.lineAnim.value, pos[1] + textSize[1] - 6))
+                    win, self.color, (pos[0], pos[1] + textSize[1] - 2 * self.fontScale + self.fontScale),
+                    (pos[0] + self.lineAnim.value, pos[1] + textSize[1] - 2 * self.fontScale + self.fontScale))
 
             win.blit(self.imgText.createTextSurf(self.texts[i]), pos)
 

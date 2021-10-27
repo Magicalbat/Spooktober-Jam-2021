@@ -17,7 +17,7 @@ def main():
     from game.startscreen import StartScreen
     from game.level import Level
 
-    screenManger = ScreenManager(Level())
+    screenManger = ScreenManager(StartScreen())
 
     running = True
     while running:

@@ -12,7 +12,7 @@ class Player(Entity):
 
         self.startPos = copy.deepcopy(self.pos)
 
-        self.imgs = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
+        self.imgs = loadSpriteSheet("data/images/characters/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
         self.imgGroundCycleAnim = Animation([0,4], 8, realTime=True)
         self.groundEyeFrames = [0,1,1,0]
         self.imgJumpCycleAnim = Animation([0,2], 4, realTime=True)
@@ -35,6 +35,7 @@ class Player(Entity):
 
         self.applyGravity = True
         self.handleCollision = True
+        self.applyVelocity = True
 
         self.theta = 0
     

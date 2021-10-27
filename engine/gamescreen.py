@@ -3,7 +3,7 @@ class GameScreen:
         pass
 
     def __init__(self):
-        self.setup()
+        pass
     
     def load(self, screenManager):
         self.screenManager = screenManager

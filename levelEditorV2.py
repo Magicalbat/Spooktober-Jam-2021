@@ -44,7 +44,8 @@ tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
-loadedExtraData = tilemap.loadFromJson("data/maps/test.json", True)
+#loadedExtraData = tilemap.loadFromJson("data/maps/test.json", True)
+loadedExtraData = {}
 
 currentLayer = 0
 editState = States.PENCIL
@@ -86,7 +87,7 @@ for key, value in loadedExtraData.items():
 
 extraDataImgs = []
 extraDataAlphaImgs = []
-colors = [(255,0,0), (0,255,0), (0,0,255)]
+colors = [(255,0,0), (255, 255, 0), (255, 0, 255), (0,255,0), (255,255,0), (0,255,255), (0,0,255), (255,0,255), (0,255,255)]
 
 selectedExtraData = 0
 
@@ -282,7 +283,7 @@ for key, value in extraData.items():
     tilemapData[key] = value
 
 if False:
-    with open("data/maps/test.json", 'w') as f:
+    with open("data/maps/level3.json", 'w') as f:
         f.write(json.dumps(tilemapData, indent=4))
 
 pygame.quit()

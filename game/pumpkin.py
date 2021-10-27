@@ -13,6 +13,7 @@ class Pumpkin(Entity):
 
         self.applyGravity = True
         self.handleCollision = True
+        self.applyVelocity = True
 
         self.stopping = False
 
