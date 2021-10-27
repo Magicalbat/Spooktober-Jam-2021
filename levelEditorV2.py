@@ -214,7 +214,7 @@ while running:
         elif editState == States.EXTRA_DATA:
             if inp.mouseJustPressed(0):
                 extraData[extraDataKeys[selectedExtraData]] = (scrolledTileMousePos[0] * tileSize, scrolledTileMousePos[1] * tileSize)
-            if inp.mouseJustPressed(2):
+            if inp.mouseJustPressed(2) or inp.keyJustPressed(pygame.K_n):
                 selectedExtraData += 1
                 selectedExtraData %= len(extraDataKeys)
 
