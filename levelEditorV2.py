@@ -19,24 +19,26 @@ from engine.input import Input
 from engine.tilemap import Tilemap
 from engine.text import Text
 
-class editStates(enum.Enum):
+class States(enum.Enum):
     PENCIL = enum.auto(),
     BOX_SELECT = enum.auto(),
     BUCKET = enum.auto(),
     COLOR_PICKER = enum.auto()
 
-def changeEditState(oldState, newState, changeCursor=True):
-    oldState = newState
+    EXTRA_DATA = enum.auto()
 
+def changeCursor(cursorState):
     if changeCursor:
-        if newState == editStates.PENCIL:
+        if cursorState == States.PENCIL:
             setCursorFromTxt("levelEditor/data/pencil.txt")
-        elif newState == editStates.BOX_SELECT:
+        elif cursorState == States.BOX_SELECT:
             setCursorFromTxt("levelEditor/data/box select.txt")
-        elif newState == editStates.BUCKET:
+        elif cursorState == States.BUCKET:
             setCursorFromTxt("levelEditor/data/bucket.txt")
-        elif newState == editStates.COLOR_PICKER:
+        elif cursorState == States.COLOR_PICKER:
             setCursorFromTxt("levelEditor/data/color picker.txt")
+        elif cursorState == States.EXTRA_DATA:
+            pygame.mouse.set_cursor(pygame.cursors.arrow)
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
@@ -44,12 +46,51 @@ tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0)
 
 tilemap.loadFromJson("data/maps/level1.json", True)
 
-editLayer = 0
-editState = 0
-changeEditState(editState, editStates.PENCIL)
+currentLayer = 0
+editState = States.PENCIL
+changeCursor(States.PENCIL)
 selectedTile = 0
 
+selectionTilePos1 = selectionTilePos2 = [0,0]
+
+def getSelectionTileRect():
+    tileRect = pygame.Rect((0,0,0,0))
+        
+    if selectionTilePos1[0] < selectionTilePos2[0]:
+        tileRect.x = selectionTilePos1[0]
+        tileRect.w = selectionTilePos2[0] - selectionTilePos1[0] + 1
+    else:
+        tileRect.x = selectionTilePos2[0]
+        tileRect.w = selectionTilePos1[0] - selectionTilePos2[0] + 1
+    
+    if selectionTilePos1[1] < selectionTilePos2[1]:
+        tileRect.y = selectionTilePos1[1]
+        tileRect.h = selectionTilePos2[1] - selectionTilePos1[1] + 1
+    else:
+        tileRect.y = selectionTilePos2[1]
+        tileRect.h = selectionTilePos1[1] - selectionTilePos2[1] + 1
+    
+    return tileRect
+
+text = Text()
+text.loadFontImg("data/images/text.png")#, scale=(2,2))
+
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
+
+extraDataKeys = ['playerSpawn', 'levelExit']
+extraData = {key : [0,0] for key in extraDataKeys}
+extraDataImgs = []
+colors = [(255,0,0), (0,255,0), (0,0,255)]
+
+selectedExtraData = 0
+
+for i, key in enumerate(extraDataKeys):
+    img = pygame.Surface((tileSize, tileSize)).convert()
+    img.fill(colors[i % len(colors)])
+
+    img.blit(text.createTextSurf(key[0].upper()), (0,0))
+
+    extraDataImgs.append(img)
 
 sbWidth = int(tileSize * 5) # sidebar width
 sidebar = pygame.Surface((sbWidth, height))
@@ -60,17 +101,15 @@ sbTileRects = [pygame.Rect((tileSize + (2 * tileSize * (i % 2)), sbScroll + ((i 
 
 win = pygame.Surface((width - sbWidth, height))
 
-scroll = [0,0]
+fScroll = [0,0]
 scrollSpeed = tileSize * 10
-
-text = Text()
-text.loadFontImg("data/images/text.png")#, scale=(2,2))
 
 inp = Input()
 
 running = True
 while running:
     clock.tick(fps)
+    delta = clock.get_time() / 1000
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -81,37 +120,53 @@ while running:
 
                 sbTileRects = [pygame.Rect((tileSize + (2 * tileSize * (i % 2)), sbScroll + ((i // 2) * 2 * tileSize), tileSize, tileSize)) for i in range(len(tileImgs))]
 
-    delta = clock.get_time() / 1000
-
     inp.update()
+
+    if inp.keyJustPressed(pygame.K_F11):
+        pygame.display.toggle_fullscreen()
 
     # CHANGE EDIT STATES ===============================
     if inp.keyJustPressed(pygame.K_p):
-        changeEditState(editState, editStates.PENCIL)
+        editState = States.PENCIL
+        changeCursor(States.PENCIL)
     if inp.keyJustPressed(pygame.K_e):
-        changeEditState(editState, editStates.BOX_SELECT)
-    if inp.keyJustPressed(pygame.K_f):
-        changeEditState(editState, editStates.BUCKET)
+        editState = States.BOX_SELECT
+        changeCursor(States.BOX_SELECT)
+    if inp.keyJustPressed(pygame.K_b):
+        editState = States.BUCKET
+        changeCursor(States.BUCKET)
     if inp.keyJustPressed(pygame.K_k):
-        changeEditState(editState, editStates.COLOR_PICKER)
+        editState = States.COLOR_PICKER
+        changeCursor(States.COLOR_PICKER)
+    
+    if inp.keyJustPressed(pygame.K_BACKQUOTE):
+        editState = States.EXTRA_DATA
+        changeCursor(States.EXTRA_DATA)
+    
+    if inp.keyJustPressed(pygame.K_SPACE):
+        currentLayer += 1
+        currentLayer %= len(tilemap.drawTiles)
     
     # CAMERA MOVEMENT ===================================
     if inp.keyDown(pygame.K_w):
-        scroll[1] -= scrollSpeed * delta
+        fScroll[1] -= scrollSpeed * delta
     if inp.keyDown(pygame.K_a):
-        scroll[0] -= scrollSpeed * delta
+        fScroll[0] -= scrollSpeed * delta
     if inp.keyDown(pygame.K_s):
-        scroll[1] += scrollSpeed * delta
+        fScroll[1] += scrollSpeed * delta
     if inp.keyDown(pygame.K_d):
-        scroll[0] += scrollSpeed * delta
+        fScroll[0] += scrollSpeed * delta
     
     if inp.keyJustPressed(pygame.K_PERIOD):
-        scroll = [0,0]
+        fScroll = [0,0]
+    
+    scroll = (int(fScroll[0]), int(fScroll[1]))
     
     mousePos = pygame.mouse.get_pos()
-    tileMousePos = (mousePos[0] // tileSize, mousePos[1] // tileSize)
-    scrolledTileMousePos = ((mousePos[0] - scroll[0]) // tileSize, (mousePos[1] - scroll[1]) // tileSize)
+    tileMousePos = ((mousePos[0] - sbWidth) // tileSize, mousePos[1] // tileSize)
+    scrolledTileMousePos = ((mousePos[0] - sbWidth + scroll[0]) // tileSize, (mousePos[1] + scroll[1]) // tileSize)
     clampedMousePos = (tileMousePos[0] * tileSize, tileMousePos[1] * tileSize)
+    drawMousePos = ((scrolledTileMousePos[0] * tileSize) - scroll[0], (scrolledTileMousePos[1] * tileSize) - scroll[1])
 
     if mousePos[0] < sbWidth: # SIDEBAR LOGIC ==========
         if inp.mouseJustPressed(0):
@@ -120,15 +175,72 @@ while running:
                     selectedTile = i
                     break
     else: # WIN LOGIC =================================
-        pass
+        if editState == States.PENCIL:
+            if inp.mouseDown(0):
+                tilemap.addDrawTile(scrolledTileMousePos, selectedTile, True, currentLayer)
+            elif inp.mouseDown(2) or inp.keyDown(pygame.K_x):
+                tilemap.removeDrawTile(scrolledTileMousePos, currentLayer)
+        elif editState == States.BOX_SELECT:
+            if inp.mouseJustPressed(0):
+                selectionTilePos1 = scrolledTileMousePos
+            
+            if inp.mouseDown(0):
+                selectionTilePos2 = scrolledTileMousePos
+            
+            if inp.keyJustPressed(pygame.K_f):
+                tileRect = getSelectionTileRect()
+
+                for x in range(tileRect.w):
+                    for y in range(tileRect.h):
+                        tilemap.addDrawTile((tileRect.x + x, tileRect.y + y), selectedTile, True, currentLayer)
+            
+            if inp.keyJustPressed(pygame.K_x):
+                tileRect = getSelectionTileRect()
+
+                for x in range(tileRect.w):
+                    for y in range(tileRect.h):
+                        tilemap.removeDrawTile((tileRect.x + x, tileRect.y + y), currentLayer)
+            
+        elif editState == States.BUCKET:
+            if inp.mouseJustPressed(0):
+                floodFill(tilemap.drawTiles[currentLayer], scrolledTileMousePos, selectedTile)
+        elif editState == States.COLOR_PICKER:
+            if inp.mouseJustPressed(0):
+                if scrolledTileMousePos in tilemap.drawTiles[currentLayer]:
+                    selectedTile = tilemap.drawTiles[currentLayer][scrolledTileMousePos]
+                    
+                    editState = States.PENCIL
+                    changeCursor(States.PENCIL)
+        elif editState == States.EXTRA_DATA:
+            if inp.mouseJustPressed(0):
+                extraData[extraDataKeys[selectedExtraData]] = (scrolledTileMousePos[0] * tileSize, scrolledTileMousePos[1] * tileSize)
+            if inp.mouseJustPressed(2):
+                selectedExtraData += 1
+                selectedExtraData %= len(extraDataKeys)
 
     # WIN DRAW =========================================
     win.fill((200,200,200))
 
-    tilemap.draw(win, scroll)
+    tilemap.draw(win, scroll)#, currentLayer)
 
-    win.blit(tileImgs[selectedTile], (clampedMousePos[0] - sbWidth, clampedMousePos[1]))
-    pygame.draw.rect(win, (0,245,255), (clampedMousePos[0] - sbWidth - 1, clampedMousePos[1] - 1, tileSize+2, tileSize+2), width=1)
+    if editState == States.PENCIL:
+        pass#win.blit(tileImgs[selectedTile], (drawMousePos[0], drawMousePos[1]))
+    elif editState == States.BOX_SELECT:
+        tileRect = getSelectionTileRect()
+        
+        pygame.draw.rect(win, (255,255,255), ((tileRect.x * tileSize) - scroll[0], (tileRect.y * tileSize) - scroll[1], tileRect.w * tileSize, tileRect.h * tileSize), width=1)
+        #tileRect = pygame.Rect((min(selectionTilePos1[0], selectionTilePos2[0]), min(selectionTilePos1[1], selectionTilePos2[1]), abs(selectionTilePos2[0] - selectionTilePos1[0]), abs(selectionTilePos2[1] - selectionTilePos1[1])))
+        #screenPos1 = ((selectionTilePos1[0] * tileSize) - scroll[0], (selectionTilePos1[1] * tileSize) - scroll[1])
+    elif editState == States.EXTRA_DATA:
+        win.blit(extraDataImgs[selectedExtraData], (drawMousePos[0], drawMousePos[1]))
+    
+    for i in range(len(extraDataKeys)):
+        drawPos = (extraData[extraDataKeys[i]][0] - scroll[0], extraData[extraDataKeys[i]][1] - scroll[1])
+        if drawPos != (0,0):
+            win.blit(extraDataImgs[i], drawPos)
+
+    if editState != States.BOX_SELECT and editState != States.EXTRA_DATA:
+        pygame.draw.rect(win, (0,245,255), (drawMousePos[0] - 1, drawMousePos[1] - 1, tileSize+2, tileSize+2), width=1)
 
     pygame.draw.rect(win, (255,255,255), (-scroll[0], -scroll[1], 320, 180), width=1)
 
@@ -143,7 +255,7 @@ while running:
 
     pygame.draw.rect(sidebar, (50,50,75), (0,0,sbWidth,20))
 
-    sidebar.blit(text.createTextSurf(f"Layer: {editLayer}"), (0,0))
+    sidebar.blit(text.createTextSurf(f"Layer: {currentLayer}"), (0,0))
     sidebar.blit(text.createTextSurf(f"({int(clampedMousePos[0])}, {int(clampedMousePos[1])})"), (0,9))
     sidebar.blit(text.createTextSurf(f"({int(scrolledTileMousePos[0])}, {int(scrolledTileMousePos[1])})"), (0,18))
 

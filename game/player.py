@@ -89,14 +89,14 @@ class Player(Entity):
             if self.velocity.x == 0:
                 self.imgGroundCycleAnim.speed = 6
             else:
-                self.imgGroundCycleAnim.speed = 12 * (self.maxSpeed / abs(self.velocity.x))
+                self.imgGroundCycleAnim.speed = 12 * (abs(self.velocity.x) / self.maxSpeed)
         elif self.velocity.y != 0:
             self.imgJumpCycleAnim.update(delta)
 
             if self.velocity.x == 0:
                 self.imgJumpCycleAnim.speed = 2
             else:
-                self.imgJumpCycleAnim.speed = 6 * (self.maxSpeed / abs(self.velocity.x))
+                self.imgJumpCycleAnim.speed = 6 * (abs(self.velocity.x) / self.maxSpeed)
 
         self.jumpPressTimer -= delta
         self.groundTimer -= delta
