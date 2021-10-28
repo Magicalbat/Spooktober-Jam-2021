@@ -44,8 +44,8 @@ tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
-#loadedExtraData = tilemap.loadFromJson("data/maps/test.json", True)
 loadedExtraData = {}
+loadedExtraData = tilemap.loadFromJson("data/maps/test.json", True)
 
 currentLayer = 0
 editState = States.PENCIL
@@ -78,7 +78,7 @@ text.loadFontImg("data/images/text.png")#, scale=(2,2))
 
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
-extraDataKeys = ['playerSpawn', 'levelExit', 'spikes', 'cameraBounds']
+extraDataKeys = ['playerSpawn', 'levelExit', 'spikes', 'cameraBounds', 'text']
 extraData = {key : [] for key in extraDataKeys}
 
 for key, value in loadedExtraData.items():
@@ -106,7 +106,7 @@ for i, key in enumerate(extraDataKeys):
 sbWidth = int(tileSize * 5) # sidebar width
 sidebar = pygame.Surface((sbWidth, height))
 
-sbScroll = tileSize * 3
+sbScroll = tileSize * 4
 sbScrollSpeed = tileSize
 sbTileRects = [pygame.Rect((tileSize + (2 * tileSize * (i % 2)), sbScroll + ((i // 2) * 2 * tileSize), tileSize, tileSize)) for i in range(len(tileImgs))]
 
@@ -176,7 +176,6 @@ while running:
     mousePos = pygame.mouse.get_pos()
     tileMousePos = ((mousePos[0] - sbWidth) // tileSize, mousePos[1] // tileSize)
     scrolledTileMousePos = ((mousePos[0] - sbWidth + scroll[0]) // tileSize, (mousePos[1] + scroll[1]) // tileSize)
-    clampedMousePos = (tileMousePos[0] * tileSize, tileMousePos[1] * tileSize)
     drawMousePos = ((scrolledTileMousePos[0] * tileSize) - scroll[0], (scrolledTileMousePos[1] * tileSize) - scroll[1])
 
     if mousePos[0] < sbWidth: # SIDEBAR LOGIC ==========
@@ -231,7 +230,7 @@ while running:
                 selectedExtraData += 1
                 selectedExtraData %= len(extraDataKeys)
             if inp.mouseDown(2) or inp.keyDown(pygame.K_x):
-                extraData[extraDataKeys[selectedExtraData]] = [i for i in extraData[extraDataKeys[selectedExtraData]] if i != [scrolledTileMousePos[0] * tileSize, scrolledTileMousePos[1] * tileSize]]
+                extraData[extraDataKeys[selectedExtraData]] = [i for i in extraData[extraDataKeys[selectedExtraData]] if tuple(i) != (scrolledTileMousePos[0] * tileSize, scrolledTileMousePos[1] * tileSize)]
 
     # WIN DRAW =========================================
     win.fill((200,200,200))
@@ -252,10 +251,11 @@ while running:
             drawPos = (extraData[extraDataKeys[i]][j][0] - scroll[0], extraData[extraDataKeys[i]][j][1] - scroll[1])
             win.blit(extraDataAlphaImgs[i], drawPos)
 
+            if extraDataKeys[i] == 'cameraBounds':
+                pygame.draw.rect(win, (0,255,0), (drawPos[0], drawPos[1], 320, 180), width=1)
+
     if editState != States.BOX_SELECT and editState != States.EXTRA_DATA:
         pygame.draw.rect(win, (0,245,255), (drawMousePos[0] - 1, drawMousePos[1] - 1, tileSize+2, tileSize+2), width=1)
-
-    pygame.draw.rect(win, (255,255,255), (-scroll[0], -scroll[1], 320, 180), width=1)
 
     # SIDEBAR DRAW =====================================
     sidebar.fill((50,50,75))
@@ -266,11 +266,12 @@ while running:
     sRect = sbTileRects[selectedTile] # Selected Rect
     pygame.draw.rect(sidebar, (0,245,255), (sRect.x - 1, sRect.y - 1, sRect.w + 2, sRect.h + 2), width=1)
 
-    pygame.draw.rect(sidebar, (50,50,75), (0,0,sbWidth,20))
+    pygame.draw.rect(sidebar, (50,50,75), (0,0,sbWidth,30))
 
     sidebar.blit(text.createTextSurf(f"Layer: {currentLayer}"), (0,0))
-    sidebar.blit(text.createTextSurf(f"({int(clampedMousePos[0])}, {int(clampedMousePos[1])})"), (0,9))
+    sidebar.blit(text.createTextSurf(f"({int(mousePos[0])}, {int(mousePos[1])})"), (0,9))
     sidebar.blit(text.createTextSurf(f"({int(scrolledTileMousePos[0])}, {int(scrolledTileMousePos[1])})"), (0,18))
+    sidebar.blit(text.createTextSurf(f"{extraDataKeys[selectedExtraData]}"), (0,27))
 
     screen.blit(win, (sbWidth, 0))
     screen.blit(sidebar, (0,0))
@@ -283,7 +284,7 @@ for key, value in extraData.items():
     tilemapData[key] = value
 
 if False:
-    with open("data/maps/level3.json", 'w') as f:
+    with open("data/maps/test.json", 'w') as f:
         f.write(json.dumps(tilemapData, indent=4))
 
 pygame.quit()

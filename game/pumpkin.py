@@ -23,7 +23,7 @@ class Pumpkin(Entity):
         
         self.jackOLantern = False
 
-        self.fireParticles = Particles([6, 8], [-3, 3, -1, 1], [-15, 15, -35, -40], 200, True, 8, 125, ((250, 192, 0), (255, 117, 0), (255,255,0), (255,128,0)))
+        self.fireParticles = Particles([6, 8], [-4, 4, -1, 1], [-15, 15, -35, -40], 200, True, 8, 125, ((250, 192, 0), (255, 117, 0), (255,255,0), (255,128,0)))
     
     def changeToJackOLantern(self):
         self.img = self.jackOLanternImg
@@ -54,4 +54,4 @@ class Pumpkin(Entity):
         if self.jackOLantern:
             self.fireParticles.update(delta)
 
-            self.fireParticles.emit((self.pos.x + 6, self.pos.y + 8), .5)
+            self.fireParticles.emit((self.pos.x + 6, self.pos.y + 8), .25)

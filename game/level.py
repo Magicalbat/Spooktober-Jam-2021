@@ -17,7 +17,8 @@ class Level(GameScreen):
         super().setup()
 
         self.tilemap = Tilemap(12)
-        extraMapData = self.tilemap.loadFromJson(f"data/maps/level{self.levelNum}.json", True)
+        extraMapData = self.tilemap.loadFromJson(f"data/maps/test.json", True)
+        #level{self.levelNum}.json
 
         playerSpawn = [20,100]
         if 'playerSpawn' in extraMapData:
@@ -45,6 +46,14 @@ class Level(GameScreen):
 
         self.text = Text()
         self.text.loadFontImg("data/images/text.png", scale=(2,2))
+
+        self.levelText = None
+        self.levelTextPos = [0,0]
+
+        if 'text' in extraMapData:
+            if isinstance(extraMapData['text'][1],str):
+                self.levelTextPos = extraMapData['text'][0]
+                self.levelText = self.text.createTextSurf(extraMapData['text'][1]).copy()
 
         self.fps = 0
 
@@ -87,11 +96,13 @@ class Level(GameScreen):
 
         self.tilemap.draw(win, self.scroll)
 
-        
         for s in self.spikes:
             pygame.draw.rect(win, (255,0,0), (s.x - self.scroll[0], s.y - self.scroll[1], s.w, s.h))
 
         pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
+
+        if self.levelText is not None:
+            win.blit(self.levelText, (self.levelTextPos[0] - self.scroll[0], self.levelTextPos[1] - self.scroll[1]))
         
         if self.ghost.active:
             win.blit(self.alphaSurf, (0,0))
@@ -106,7 +117,7 @@ class Level(GameScreen):
         if self.lightningTimer > 0.15:
             win.fill((225,225,225))
 
-        #win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
+        win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
 
         if self.paused:
             win.blit(self.alphaSurf, (0,0))
