@@ -30,7 +30,7 @@ class Ghost(Entity):
     
     def draw(self, win, scroll):
         if self.active:
-            win.blit(pygame.transform.flip(self.img, self.flipped, False), (self.rect.x, self.rect.y))
+            win.blit(pygame.transform.flip(self.img, self.flipped, False), (self.rect.x - scroll[0], self.rect.y - scroll[1]))
             #super().drawRect(win, scroll)
 
     def update(self, delta):

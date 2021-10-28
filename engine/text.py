@@ -35,19 +35,22 @@ class Text():
             self.chars[key] = (item, pygame.transform.scale(self.fontImg.subsurface(charRect).convert(), (self.scale[0] * charRect[2], self.scale[1] * charRect[3])))
     
     def measureText(self, msg):
-        return (sum(((self.chars[c][0] + 1) * self.scale[0] if c != ' ' else self.maxCharDim[0] * self.scale[0] for c in msg)), self.maxCharDim[1] * self.scale[1])
+        return (sum(((self.chars[c][0] + 1) * self.scale[0] if c != ' ' and c != '\n' else self.maxCharDim[0] * self.scale[0] for c in msg)), self.maxCharDim[1] * self.scale[1] + sum((self.maxCharDim[1] * self.scale[1] for c in msg if c == '\n')))
     
     def createTextSurf(self, msg):
         surf = pygame.Surface(self.measureText(msg)).convert()
         surf.set_colorkey((0,0,0))
 
-        x = 0
+        offset = pygame.math.Vector2(0,0)
         for c in msg:
             if c in self.chars:
-                surf.blit(self.chars[c][1], (x, 0))
+                surf.blit(self.chars[c][1], offset)
 
-                x += (self.chars[c][0] + 1) * self.scale[0]
+                offset.x += (self.chars[c][0] + 1) * self.scale[0]
             elif c == ' ':
-                x += (self.maxCharDim[0]) * self.scale[0]
+                offset.x += (self.maxCharDim[0]) * self.scale[0]
+            elif c == '\n':
+                offset.x = 0
+                offset.y += self.maxCharDim[1] * self.scale[1]
         
         return surf

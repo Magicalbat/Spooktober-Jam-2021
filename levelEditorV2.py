@@ -54,7 +54,7 @@ def changeCursor(cursorState):
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
-levelNum = 6
+levelNum = 5
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
@@ -100,7 +100,7 @@ extraData = {key : [] for key in extraDataKeys}
 for key, value in loadedExtraData.items():
     if key in extraData:
         if key == 'maxPumpkins':
-            extraData[key] = [[value, 0]]
+            extraData[key] = [[value * tileSize, 0]]
         else:
             extraData[key] = list(value)
 
@@ -303,7 +303,8 @@ for key, value in extraData.items():
     if value != []:
         tilemapData[key] = value
     if key == 'maxPumpkins':
-        tilemapData[key] = int(value[0][0] / tileSize)
+        if len(value) >= 1:
+            tilemapData[key] = int(value[0][0] / tileSize)
 
 if True:
     with open(f"data/maps/level{levelNum}.json", 'w') as f:
