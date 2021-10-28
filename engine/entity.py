@@ -88,7 +88,8 @@ class Entity:
         if chunks is None:
             chunks = {}
         if self.applyGravity:
-            self.velocity[1] += self.gravity * delta
+            self.velocity.y += self.gravity * delta
+            self.velocity.y = min(self.velocity.y, self.gravity * 0.75)
 
         if self.applyVelocity and not self.handleCollision:
             self.pos.x += self.velocity.x * delta

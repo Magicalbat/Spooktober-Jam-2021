@@ -54,7 +54,7 @@ def changeCursor(cursorState):
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
-levelNum = 5
+levelNum = 8
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)

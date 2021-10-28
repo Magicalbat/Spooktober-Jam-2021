@@ -78,7 +78,7 @@ class Level(GameScreen):
 
         self.lightningTimer = 0
     
-    def __init__(self, levelNum=5, prevScreen=None):
+    def __init__(self, levelNum=1, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()
