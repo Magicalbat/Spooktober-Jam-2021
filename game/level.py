@@ -17,7 +17,7 @@ class Level(GameScreen):
         super().setup()
 
         self.tilemap = Tilemap(12)
-        extraMapData = self.tilemap.loadFromJson(f"data/maps/test.json", True)
+        extraMapData = self.tilemap.loadFromJson(f"data/maps/level{self.levelNum}.json", True)
         #level{self.levelNum}.json
 
         playerSpawn = [20,100]
@@ -43,6 +43,10 @@ class Level(GameScreen):
         self.pumpkinImgs = loadSpriteSheet("data/images/characters/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
         self.pumpkinImgs = [self.pumpkinImgs[0], self.pumpkinImgs[4], self.pumpkinImgs[5]]
         self.pumpkins = []
+
+        self.maxPumpkins = 1
+        if 'maxPumpkins' in extraMapData:
+            self.maxPumpkins = extraMapData['maxPumpkins']
 
         self.text = Text()
         self.text.loadFontImg("data/images/text.png", scale=(2,2))
@@ -74,7 +78,7 @@ class Level(GameScreen):
 
         self.lightningTimer = 0
     
-    def __init__(self, levelNum=1, prevScreen=None):
+    def __init__(self, levelNum=6, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()
@@ -117,7 +121,8 @@ class Level(GameScreen):
         if self.lightningTimer > 0.15:
             win.fill((225,225,225))
 
-        win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
+        win.blit(self.pumpkinImgs[0], (0,0))
+        win.blit(self.text.createTextSurf(f': {self.maxPumpkins - len(self.pumpkins)}'), (16,0))
 
         if self.paused:
             win.blit(self.alphaSurf, (0,0))
@@ -149,14 +154,15 @@ class Level(GameScreen):
                     self.pumpkins.sort(key=lambda p:(p.rect.x, p.rect.y))
 
             if inp.keyJustPressed(pygame.K_x):
-                self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImgs[random.randint(0,2)], self.jackOLanternImg))
+                if len(self.pumpkins) + 1 <= self.maxPumpkins:
+                    self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImgs[random.randint(0,2)], self.jackOLanternImg))
                 
-                self.player.reset()
+                    self.player.reset()
 
-                hitlist = getCollidingRects(self.player.rect, [p.rect for p in self.pumpkins])
+                    hitlist = getCollidingRects(self.player.rect, [p.rect for p in self.pumpkins])
                 
-                for rect in hitlist:
-                    self.pumpkins.remove(rect)
+                    for rect in hitlist:
+                        self.pumpkins.remove(rect)
             
             if self.player.rect.collidelist(self.spikes) != -1:
                 self.player.reset()

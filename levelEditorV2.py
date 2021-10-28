@@ -1,3 +1,17 @@
+"""
+
+WASD - scroll
+P - Pencil (left click to place, x to erase)
+E - Box select (f to fill, x to erase)
+B - Bucket
+K - Color picker
+
+` - Extra data (C to change data, X to delete)
+
+SPACE - Change layers
+
+"""
+
 import pygame
 
 pygame.init()
@@ -40,12 +54,14 @@ def changeCursor(cursorState):
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
+levelNum = 6
+
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
 loadedExtraData = {}
-loadedExtraData = tilemap.loadFromJson("data/maps/test.json", True)
+loadedExtraData = tilemap.loadFromJson(f"data/maps/level{levelNum}.json", True)
 
 currentLayer = 0
 editState = States.PENCIL
@@ -78,12 +94,15 @@ text.loadFontImg("data/images/text.png")#, scale=(2,2))
 
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
-extraDataKeys = ['playerSpawn', 'levelExit', 'spikes', 'cameraBounds', 'text']
+extraDataKeys = ['playerSpawn', 'levelExit', 'spikes', 'maxPumpkins', 'cameraBounds', 'text']
 extraData = {key : [] for key in extraDataKeys}
 
 for key, value in loadedExtraData.items():
     if key in extraData:
-        extraData[key] = list(value)
+        if key == 'maxPumpkins':
+            extraData[key] = [[value, 0]]
+        else:
+            extraData[key] = list(value)
 
 extraDataImgs = []
 extraDataAlphaImgs = []
@@ -281,10 +300,13 @@ tilemap.generateCollision({i + 1 for i in range(15)}, True)
 tilemapData = tilemap.saveToJson()
 
 for key, value in extraData.items():
-    tilemapData[key] = value
+    if value != []:
+        tilemapData[key] = value
+    if key == 'maxPumpkins':
+        tilemapData[key] = int(value[0][0] / tileSize)
 
-if False:
-    with open("data/maps/test.json", 'w') as f:
+if True:
+    with open(f"data/maps/level{levelNum}.json", 'w') as f:
         f.write(json.dumps(tilemapData, indent=4))
 
 pygame.quit()
