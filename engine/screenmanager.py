@@ -13,7 +13,7 @@ class ScreenManager:
         self.currentScreen.setup()
         self.inp = Input()
 
-        self.triangleWipe = pygame.image.load("data/images/transitions/Triangle Wipe.png").convert()
+        self.triangleWipe = pygame.image.load("data/images/other/Triangle Wipe.png").convert()
         self.triangleWipe.set_colorkey((0,0,0))
         
         self.screenWipeAnim = Animation([-320, 0, -320], 960, "Stop Restart", True, False)

@@ -37,6 +37,8 @@ class Level(GameScreen):
             for pos in extraMapData['spikes']:
                 self.spikes.append(pygame.Rect((pos[0], pos[1] + 8, 12, 4)))
 
+        self.jackOLanternImg = pygame.image.load("data/images/characters/jack_o_lantern.png").convert()
+        self.jackOLanternImg.set_colorkey((0,0,0))
         self.pumpkinImgs = loadSpriteSheet("data/images/characters/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
         self.pumpkinImgs = [self.pumpkinImgs[0], self.pumpkinImgs[4], self.pumpkinImgs[5]]
         self.pumpkins = []
@@ -57,11 +59,11 @@ class Level(GameScreen):
         self.pauseMenu = Menu(["Resume", "Back"], 1, (0, 16), (5, 5), {0:self.togglePause, 1:self.screenManager.changeScreenWithTransition}, {1:self.prevScreen})
         self.paused = False
         
-        self.pauseSurf = pygame.Surface((320,180))
-        self.pauseSurf.fill((0,0,0))
-        self.pauseSurf.set_alpha(128)
+        self.alphaSurf = pygame.Surface((320,180))
+        self.alphaSurf.fill((0,0,0))
+        self.alphaSurf.set_alpha(128)
 
-        self.levelChangeTimer = 0
+        self.lightningTimer = 0
     
     def __init__(self, levelNum=1, prevScreen=None):
         self.levelNum = levelNum
@@ -79,30 +81,44 @@ class Level(GameScreen):
         self.scroll[1] += ((self.player.pos.y - win.get_height() / 2) - self.scroll[1]) / 20
         self.scroll[1] = clamp(self.scroll[1], self.cameraBounds[0][1], self.cameraBounds[1][1])
 
+        if self.lightningTimer > 0:
+            self.scroll[0] += random.randint(0,8) - 4
+            self.scroll[1] += random.randint(0,8) - 4
+
         self.tilemap.draw(win, self.scroll)
 
-        self.player.draw(win, self.scroll)
-        
-        for p in self.pumpkins:
-            p.draw(win, self.scroll)
         
         for s in self.spikes:
             pygame.draw.rect(win, (255,0,0), (s.x - self.scroll[0], s.y - self.scroll[1], s.w, s.h))
 
         pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
-
+        
+        if self.ghost.active:
+            win.blit(self.alphaSurf, (0,0))
+        
+        self.player.draw(win, self.scroll)
+        
         self.ghost.draw(win, self.scroll)
+
+        for p in self.pumpkins:
+            p.draw(win, self.scroll)
+        
+        if self.lightningTimer > 0.15:
+            win.fill((225,225,225))
 
         #win.blit(self.text.createTextSurf(f'{self.fps}'), (0,0))
 
         if self.paused:
-            win.blit(self.pauseSurf, (0,0))
+            win.blit(self.alphaSurf, (0,0))
             self.pauseMenu.draw(win)
 
     def update(self, delta, inp):
         if delta:
             self.fps = int(1 / delta)
             delta = min(delta, 0.1)
+        
+        if self.lightningTimer > 0:
+            self.lightningTimer -= delta
         
         if inp.keyJustPressed(pygame.K_ESCAPE):
             self.togglePause()
@@ -122,7 +138,7 @@ class Level(GameScreen):
                     self.pumpkins.sort(key=lambda p:(p.rect.x, p.rect.y))
 
             if inp.keyJustPressed(pygame.K_x):
-                self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImgs[random.randint(0,2)]))
+                self.pumpkins.append(Pumpkin(self.player.rect.x, self.player.rect.y, self.player.rect.w, self.player.rect.h, self.player.velocity, self.player.gravity, self.pumpkinImgs[random.randint(0,2)], self.jackOLanternImg))
                 
                 self.player.reset()
 
@@ -139,6 +155,11 @@ class Level(GameScreen):
                 self.player.applyGravity = False
                 self.player.applyVelocity = False
                 self.player.handleCollision = False
+
+                for p in self.pumpkins:
+                    p.changeToJackOLantern()
+                
+                self.lightningTimer = .25
             
             if self.ghost.active:
                 self.player.pos = pygame.math.Vector2(self.ghost.pos.x, self.ghost.pos.y + 10)
