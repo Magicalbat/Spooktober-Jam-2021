@@ -713,14 +713,21 @@
     },
     "playerSpawn": [
         [
-        24,
-        120
+            24,
+            120
         ]
     ],
     "levelExit": [
         [
-        300,
-        72
+            300,
+            72
+        ]
+    ],
+    "maxPumpkins": 2,
+    "cameraBounds": [
+        [
+            0,
+            0
         ]
     ]
 }

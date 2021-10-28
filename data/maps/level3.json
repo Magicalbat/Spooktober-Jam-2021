@@ -736,6 +736,7 @@
             132
         ]
     ],
+    "maxPumpkins": 4,
     "cameraBounds": [
         [
             0,
