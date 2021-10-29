@@ -47,7 +47,7 @@ tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
 loadedExtraData = {}
-#loadedExtraData = tilemap.loadFromJson(f"data/maps/level{levelNum}.json", True)
+loadedExtraData = tilemap.loadFromJson(f"data/maps/level{levelNum}.json", True)
 
 currentLayer = 0
 editState = States.PENCIL

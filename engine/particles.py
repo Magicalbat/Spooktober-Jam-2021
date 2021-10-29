@@ -3,13 +3,15 @@ import pygame
 import random
 
 class Particles:
-    def __init__(self, sizeRange, startPosRange, startVelRange=[0, .1, 0, .1], maxParticles=250, circle=False, speed=0.1, gravity=0, colors=(), startCol=(255,255,255), endCol=(0,0,0)):
+    def __init__(self, sizeRange, startPosRange, startVelRange=[0, .1, 0, .1], maxParticles=250, circle=False, speed=0.1, gravity=0, colors=None, startCol=(255,255,255), endCol=(0,0,0)):
         self.sizeRange = list(sizeRange)
         self.startPosRange = list(startPosRange)
         self.startVelRange = list(startVelRange)
         self.circle = circle
         self.speed = speed
         self.gravity = gravity
+        if colors is None:
+            colors = ()
         self.colors = colors
         self.startCol = pygame.Color(startCol)
         self.endCol = pygame.Color(endCol)

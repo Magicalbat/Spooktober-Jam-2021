@@ -23,7 +23,7 @@ class Pumpkin(Entity):
         
         self.jackOLantern = False
 
-        self.fireParticles = Particles([6, 8], [-4, 4, -1, 1], [-15, 15, -35, -40], 200, True, 8, 125, ((250, 192, 0), (255, 117, 0), (255,255,0), (255,128,0)))
+        self.fireParticles = Particles([6, 8], [-4, 4, -1, 1], [-15, 15, -35, -40], 100, True, 8, 125, ((250, 192, 0), (255, 117, 0), (255,255,0), (255,128,0)))
     
     def changeToJackOLantern(self):
         self.img = self.jackOLanternImg
@@ -42,7 +42,7 @@ class Pumpkin(Entity):
             rects.remove(self.rect)
         super().update(delta, rects, chunks)
 
-        self.velocity.y = min(self.velocity.y, self.gravity * 0.25)
+        self.velocity.y = min(self.velocity.y, self.gravity * 0.75)
 
         if self.velocity.y == 0:
             self.stopping = True

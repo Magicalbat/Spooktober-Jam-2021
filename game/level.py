@@ -6,6 +6,7 @@ from engine.gamescreen import GameScreen
 from engine.tilemap import Tilemap
 from engine.text import Text
 from engine.menu import Menu
+from engine.particles import Particles
 from engine.common import *
 
 from game.player import Player
@@ -49,6 +50,13 @@ class Level(GameScreen):
         self.maxPumpkins = 1
         if 'maxPumpkins' in extraMapData:
             self.maxPumpkins = extraMapData['maxPumpkins']
+        
+        self.wind = []
+        self.windSpeed = self.player.gravity
+        self.windParticles = Particles((5, 6), (0, 12, -2, 2), (-.1, .1, -10, -25), 1000, True, 6, colors=((255,255,255),(225,225,225),(200,200,200)))
+        if 'wind' in extraMapData:
+            for pos in extraMapData['wind']:
+                self.wind.append(pygame.Rect((pos[0], pos[1], 12, 12)))
 
         self.text = Text()
         self.text.loadFontImg("data/images/text.png", scale=(2,2))
@@ -82,7 +90,7 @@ class Level(GameScreen):
         self.lightningSound = pygame.mixer.Sound("data/sounds/thunder.wav")
         self.lightningSound.set_volume(0.25)
     
-    def __init__(self, levelNum=5, prevScreen=None):
+    def __init__(self, levelNum=9, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()
@@ -106,8 +114,13 @@ class Level(GameScreen):
 
         for s in self.spikes:
             pygame.draw.rect(win, (255,0,0), (s.x - self.scroll[0], s.y - self.scroll[1], s.w, s.h))
-
+        
         pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
+
+        for w in self.wind:
+            self.windParticles.emit((w.x, w.y + 12), .2)
+            #pygame.draw.rect(win, (0,128,128), (w.x - self.scroll[0], w.y - self.scroll[1], w.w, w.h))
+        self.windParticles.draw(win, self.scroll)
 
         if self.levelText is not None:
             win.blit(self.levelText, (self.levelTextPos[0] - self.scroll[0], self.levelTextPos[1] - self.scroll[1]))
@@ -146,7 +159,15 @@ class Level(GameScreen):
         if not self.paused:
             entityRects = [p.rect for p in self.pumpkins]
 
+            self.windParticles.update(delta)
+
             self.player.update(delta, inp, entityRects, self.tilemap.chunks)
+
+            if self.player.rect.collidelist(self.wind) != -1:
+                dist = abs(self.player.pos.y) % 12
+                if dist < 1:
+                    self.player.velocity.y -= self.windSpeed * delta * 1.4
+                self.player.velocity.y -= self.windSpeed * delta * ((max(dist, 2) / 12) * 5)
 
             entityRects.append(self.player.rect)
 
@@ -156,6 +177,12 @@ class Level(GameScreen):
                 if p.stopping:
                     p.stopping = False
                     self.pumpkins.sort(key=lambda p:(p.rect.x, p.rect.y))
+                
+                if p.rect.collidelist(self.wind) != -1:
+                    dist = abs(p.pos.y) % 12
+                    if dist < 1:
+                        p.velocity.y -= self.windSpeed * delta * 1.4
+                    p.velocity.y -= self.windSpeed * delta * ((max(dist, 2) / 12) * 5)
 
             if inp.keyJustPressed(pygame.K_x):
                 if len(self.pumpkins) + 1 <= self.maxPumpkins:

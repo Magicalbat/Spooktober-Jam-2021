@@ -24,7 +24,7 @@ def main():
 
     pygame.mixer.music.load("data/sounds/A_Wonderful_Nightmare.ogg")
     pygame.mixer.music.set_volume(0.1)
-    #pygame.mixer.music.play(-1)
+    pygame.mixer.music.play(-1)
 
     from engine.screenmanager import ScreenManager
     from game.startscreen import StartScreen
