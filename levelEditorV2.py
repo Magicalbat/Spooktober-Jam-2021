@@ -1,17 +1,3 @@
-"""
-
-WASD - scroll
-P - Pencil (left click to place, x to erase)
-E - Box select (f to fill, x to erase)
-B - Bucket
-K - Color picker
-
-` - Extra data (C to change data, X to delete)
-
-SPACE - Change layers
-
-"""
-
 import pygame
 
 pygame.init()
@@ -54,7 +40,7 @@ def changeCursor(cursorState):
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
-levelNum = 7
+levelNum = 5
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)

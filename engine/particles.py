@@ -33,7 +33,7 @@ class Particles:
             if self.colors == ():
                 col = self.endCol.lerp(self.startCol, self.size[i] / self.sizeRange[1])
             else:
-                col = self.colors[i % len(self.colors)]
+                col = random.choice(self.colors)#self.colors[i % len(self.colors)]
 
             if self.circle:
                 pygame.draw.circle(win, col, (int(self.pos[i][0] - scroll[0]), int(self.pos[i][1] - scroll[1])), int(self.size[i] / 2))
