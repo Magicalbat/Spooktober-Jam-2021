@@ -44,6 +44,8 @@ class Level(GameScreen):
         self.pumpkinImgs = [self.pumpkinImgs[0], self.pumpkinImgs[4], self.pumpkinImgs[5]]
         self.pumpkins = []
 
+        self.pumpkinSpawnSound = pygame.mixer.Sound("data/sounds/pumpkin.wav")
+
         self.maxPumpkins = 1
         if 'maxPumpkins' in extraMapData:
             self.maxPumpkins = extraMapData['maxPumpkins']
@@ -69,7 +71,7 @@ class Level(GameScreen):
             else:
                 self.cameraBounds = (extraMapData['cameraBounds'][0], extraMapData['cameraBounds'][1])
         
-        self.pauseMenu = Menu(["Resume", "Back"], 1, (0, 16), (5, 5), {0:self.togglePause, 1:self.screenManager.changeScreenWithTransition}, {1:self.prevScreen})
+        self.pauseMenu = Menu(["Resume", "Back"], 2, (0, 20), (5, 25), {0:self.togglePause, 1:self.screenManager.changeScreenWithTransition}, {1:self.prevScreen})
         self.paused = False
         
         self.alphaSurf = pygame.Surface((320,180))
@@ -77,6 +79,8 @@ class Level(GameScreen):
         self.alphaSurf.set_alpha(128)
 
         self.lightningTimer = 0
+        self.lightningSound = pygame.mixer.Sound("data/sounds/thunder.wav")
+        self.lightningSound.set_volume(0.25)
     
     def __init__(self, levelNum=1, prevScreen=None):
         self.levelNum = levelNum
@@ -121,8 +125,8 @@ class Level(GameScreen):
         if self.lightningTimer > 0.15:
             win.fill((225,225,225))
 
-        win.blit(self.pumpkinImgs[0], (0,0))
-        win.blit(self.text.createTextSurf(f': {self.maxPumpkins - len(self.pumpkins)}'), (16,0))
+        win.blit(self.pumpkinImgs[0], (4,4))
+        win.blit(self.text.createTextSurf(f': {self.maxPumpkins - len(self.pumpkins)}'), (20,4))
 
         if self.paused:
             win.blit(self.alphaSurf, (0,0))
@@ -163,6 +167,8 @@ class Level(GameScreen):
                 
                     for rect in hitlist:
                         self.pumpkins.remove(rect)
+                    
+                    self.pumpkinSpawnSound.play()
             
             if self.player.rect.collidelist(self.spikes) != -1:
                 self.player.reset()
@@ -177,6 +183,7 @@ class Level(GameScreen):
                     p.changeToJackOLantern()
                 
                 self.lightningTimer = .25
+                self.lightningSound.play()
             
             if self.ghost.active:
                 self.player.pos = pygame.math.Vector2(self.ghost.pos.x, self.ghost.pos.y + 10)
@@ -184,7 +191,7 @@ class Level(GameScreen):
             
             if self.ghost.finished:
                 #from game.startscreen import StartScreen
-                self.screenManager.changeScreenWithTransition(Level(self.levelNum + 1))
+                self.screenManager.changeScreenWithTransition(Level(self.levelNum + 1, self.prevScreen))
             
             self.ghost.update(delta)
 

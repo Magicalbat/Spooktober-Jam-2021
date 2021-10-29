@@ -1,6 +1,15 @@
 import pygame
 
+"""
+
+Sound Credits:
+
+Song - A Wonderful Nightmare, Credit: SpiderDave
+
+"""
+
 def main():
+    pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
 
     pygame.event.set_allowed([pygame.QUIT])
@@ -12,6 +21,10 @@ def main():
 
     clock = pygame.time.Clock()
     fps = 60
+
+    pygame.mixer.music.load("data/sounds/A_Wonderful_Nightmare.ogg")
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play(-1)
 
     from engine.screenmanager import ScreenManager
     from game.startscreen import StartScreen

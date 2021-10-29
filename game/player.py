@@ -33,11 +33,12 @@ class Player(Entity):
         self.maxJumpVel = -math.sqrt(2 * self.gravity * maxJumpHeight)
         self.minJumpVel = -math.sqrt(2 * self.gravity * minJumpHeight)
 
+        self.jumpSound = pygame.mixer.Sound("data/sounds/jump.wav")
+        self.jumpSound.set_volume(0.35)
+
         self.applyGravity = True
         self.handleCollision = True
         self.applyVelocity = True
-
-        self.theta = 0
     
     def draw(self, win, scroll=(0,0)):
         if self.collisionTypes['bottom'] or self.velocity.y == 0:
@@ -112,9 +113,13 @@ class Player(Entity):
             self.velocity.y = self.maxJumpVel
             self.groundTimer = 0
             self.jumpPressTimer = 0
+
+            self.jumpSound.play()
         
         if (inp.keyJustReleased(pygame.K_UP) or inp.keyJustReleased(pygame.K_c)) and self.velocity.y < self.minJumpVel:
             self.velocity.y = self.minJumpVel
+        
+        self.velocity.y = min(self.velocity.y, self.gravity * 0.75)
     
     def reset(self):
         self.pos = copy.deepcopy(self.startPos)

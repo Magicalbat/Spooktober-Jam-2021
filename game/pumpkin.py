@@ -42,6 +42,8 @@ class Pumpkin(Entity):
             rects.remove(self.rect)
         super().update(delta, rects, chunks)
 
+        self.velocity.y = min(self.velocity.y, self.gravity * 0.25)
+
         if self.velocity.y == 0:
             self.stopping = True
 

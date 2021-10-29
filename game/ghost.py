@@ -21,6 +21,8 @@ class Ghost(Entity):
         self.yAccel = yAccel
 
         self.finished = False
+
+        self.scroll = [0,0]
     
     def activate(self, pos, dir):
         self.pos = copy.deepcopy(pos)
@@ -31,6 +33,7 @@ class Ghost(Entity):
     def draw(self, win, scroll):
         if self.active:
             win.blit(pygame.transform.flip(self.img, self.flipped, False), (self.rect.x - scroll[0], self.rect.y - scroll[1]))
+            self.scroll = scroll
             #super().drawRect(win, scroll)
 
     def update(self, delta):
@@ -38,7 +41,7 @@ class Ghost(Entity):
             self.velocity.x = self.speed * self.moveDir
             self.velocity.y -= self.yAccel * 0.01
         
-            if self.pos.y < -24:
+            if self.pos.y - self.scroll[1] < -24:
                 self.finished = True
         
             super().update(delta)
