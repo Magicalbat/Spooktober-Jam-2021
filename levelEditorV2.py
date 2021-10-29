@@ -40,14 +40,14 @@ def changeCursor(cursorState):
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
-levelNum = 5
+levelNum = 9
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
 loadedExtraData = {}
-loadedExtraData = tilemap.loadFromJson(f"data/maps/level{levelNum}.json", True)
+#loadedExtraData = tilemap.loadFromJson(f"data/maps/level{levelNum}.json", True)
 
 currentLayer = 0
 editState = States.PENCIL
@@ -80,7 +80,7 @@ text.loadFontImg("data/images/text.png")#, scale=(2,2))
 
 tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1), 16, (0, 0, 0))
 
-extraDataKeys = ['playerSpawn', 'levelExit', 'spikes', 'maxPumpkins', 'cameraBounds', 'text']
+extraDataKeys = ['playerSpawn', 'levelExit', 'maxPumpkins', 'spikes', 'wind', 'cameraBounds', 'text']
 extraData = {key : [] for key in extraDataKeys}
 
 for key, value in loadedExtraData.items():
