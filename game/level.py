@@ -29,6 +29,9 @@ class Level(GameScreen):
         self.player = Player(playerSpawn[0], playerSpawn[1], 12, 12)
         self.ghost = Ghost(0, 0, 12, 12, self.player.gravity)
 
+        self.levelExitImg = pygame.image.load("data/images/tiles/candles.png").convert()
+        self.levelExitImg.set_colorkey((0,0,0))
+        self.levelExitParticles = Particles([2,4], [-4, 4, -1, 1], [-15, 15, -35, -40], 100, True, 4, colors=((250, 192, 0), (255, 117, 0), (255,255,0), (255,128,0)))
         if 'levelExit' in extraMapData:
             self.levelExit = pygame.Rect((extraMapData['levelExit'][0][0], extraMapData['levelExit'][0][1], 12, 12))
         else:
@@ -93,7 +96,7 @@ class Level(GameScreen):
         self.lightningSound = pygame.mixer.Sound("data/sounds/thunder.wav")
         self.lightningSound.set_volume(0.25)
     
-    def __init__(self, levelNum=15, prevScreen=None):
+    def __init__(self, levelNum=1, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()
@@ -119,7 +122,10 @@ class Level(GameScreen):
             #pygame.draw.rect(win, (255,0,0), (s.x - self.scroll[0], s.y - self.scroll[1], s.w, s.h))
             win.blit(self.spikeImg, (s.x - self.scroll[0], s.y - self.scroll[1] - 4))
         
-        pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
+        if self.levelExit != pygame.Rect((0,0,0,0)):
+            win.blit(self.levelExitImg, (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1]))
+
+            self.levelExitParticles.draw(win, self.scroll)
 
         for w in self.wind:
             self.windParticles.emit((w.x, w.y + 12), .2)
@@ -202,6 +208,14 @@ class Level(GameScreen):
             
             if self.player.rect.collidelist(self.spikes) != -1:
                 self.player.reset()
+            
+            if self.levelExit != pygame.Rect((0,0,0,0)):
+                self.levelExitParticles.update(delta)
+                
+                self.levelExitParticles.emit((self.levelExit.x+1, self.levelExit.y+6), 0.025)
+                self.levelExitParticles.emit((self.levelExit.x+5, self.levelExit.y+5), 0.025)
+                self.levelExitParticles.emit((self.levelExit.x+7, self.levelExit.y+7), 0.025)
+                self.levelExitParticles.emit((self.levelExit.x+10, self.levelExit.y+4), 0.025)
 
             if self.player.rect.colliderect(self.levelExit) and not self.ghost.active:
                 self.ghost.activate(self.player.pos, (self.player.pos.x < 320 / 2) * 2 - 1)
