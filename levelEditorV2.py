@@ -40,7 +40,7 @@ def changeCursor(cursorState):
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
-levelNum = 14
+levelNum = 8
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
@@ -84,12 +84,18 @@ tileImgs = loadSpriteSheet("data/images/tiles/tiles.png", (12,12), (4,4), (1, 1)
 extraDataKeys = ['playerSpawn', 'levelExit', 'maxPumpkins', 'spikes', 'wind', 'cameraBounds', 'text']
 extraData = {key : [] for key in extraDataKeys}
 
+textData = ""
+
 for key, value in loadedExtraData.items():
     if key in extraData:
         if key == 'maxPumpkins':
             extraData[key] = [[value * tileSize, 0]]
-        else:
+        elif all((not isinstance(i, str) for i in value)):
             extraData[key] = list(value)
+        else:
+            for i in value:
+                if isinstance(i, str):
+                    textData = i
 
 extraDataImgs = []
 extraDataAlphaImgs = []
@@ -292,6 +298,8 @@ for key, value in extraData.items():
     if key == 'maxPumpkins':
         if len(value) >= 1:
             tilemapData[key] = int(value[0][0] / tileSize)
+    if key == 'text':
+        tilemapData[key] = value + [textData]
 
 if True:
     with open(f"data/maps/level{levelNum}.json", 'w') as f:

@@ -550,6 +550,7 @@
             96
         ]
     ],
+    "maxPumpkins": 4,
     "spikes": [
         [
             72,
@@ -612,11 +613,17 @@
             132
         ]
     ],
-    "maxPumpkins": 4,
     "cameraBounds": [
         [
             0,
             0
         ]
+    ],
+    "text": [
+        [
+            36,
+            36
+        ],
+        "Pumpkins that you get left\nbehind are sacrificed to\nbecome jack O'lanterns."
     ]
 }

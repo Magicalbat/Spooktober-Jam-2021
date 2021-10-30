@@ -510,5 +510,12 @@
             0,
             0
         ]
+    ],
+    "text": [
+        [
+            48,
+            24
+        ],
+        "Left, Right -> move\nc -> jump\nx -> discard pumpkin\nr -> restart\nESC -> pause"
     ]
 }

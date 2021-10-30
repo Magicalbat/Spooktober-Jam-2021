@@ -550,5 +550,12 @@
             0,
             0
         ]
+    ],
+    "text": [
+        [
+            36,
+            24
+        ],
+        "A new pumpkin will destroy any\nold pumpkins that it is touching."
     ]
 }

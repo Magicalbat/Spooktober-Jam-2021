@@ -37,19 +37,23 @@ class Pumpkin(Entity):
         win.blit(self.img, (self.rect.x - scroll[0] - 1, self.rect.y - scroll[1] - 2))
     
     def update(self, delta, collisionRects=None, chunks=None):
-        rects = copy.deepcopy(collisionRects)
-        if self.rect in collisionRects:
-            rects.remove(self.rect)
-        super().update(delta, rects, chunks)
+        if self.handleCollision:
+            rects = copy.deepcopy(collisionRects)
+            if self.rect in collisionRects:
+                rects.remove(self.rect)
+            super().update(delta, rects, chunks)
 
-        self.velocity.y = min(self.velocity.y, self.gravity * 0.75)
+            self.velocity.y = min(self.velocity.y, self.gravity * 0.75)
 
-        if self.velocity.y == 0:
-            self.stopping = True
+            if self.velocity.y == 0:
+                self.stopping = True
 
-            self.applyGravity = False
-            self.handleCollision = False
+                self.applyGravity = False
+                self.handleCollision = False
 
+                self.velocity.x = 0
+                self.velocity.y = 0
+        else:
             self.velocity.x = 0
             self.velocity.y = 0
         

@@ -60,7 +60,7 @@ class Level(GameScreen):
                 self.wind.append(pygame.Rect((pos[0], pos[1], 12, 12)))
 
         self.text = Text()
-        self.text.loadFontImg("data/images/text.png", scale=(2,2))
+        self.text.loadFontImg("data/images/text.png", scale=(2,2), color=(255, 229, 127))
 
         self.levelText = None
         self.levelTextPos = [0,0]
@@ -69,6 +69,7 @@ class Level(GameScreen):
             if isinstance(extraMapData['text'][1],str):
                 self.levelTextPos = extraMapData['text'][0]
                 self.levelText = self.text.createTextSurf(extraMapData['text'][1]).copy()
+                self.text.loadFontImg("data/images/text.png", scale=(2,2))
 
         self.fps = 0
 
@@ -80,7 +81,7 @@ class Level(GameScreen):
             else:
                 self.cameraBounds = (sorted((extraMapData['cameraBounds'][0], extraMapData['cameraBounds'][1])))
         
-        self.pauseMenu = Menu(["Resume", "Back"], 2, (0, 20), (5, 25), {0:self.togglePause, 1:self.screenManager.changeScreenWithTransition}, {1:self.prevScreen})
+        self.pauseMenu = Menu(["Resume", "Restart", "Back"], 2, (0, 20), (5, 25), {0:self.togglePause, 1:self.screenManager.reloadCurrentScreenWithTransition, 2:self.screenManager.changeScreenWithTransition}, {2:self.prevScreen})
         self.paused = False
         
         self.alphaSurf = pygame.Surface((320,180))
@@ -91,7 +92,7 @@ class Level(GameScreen):
         self.lightningSound = pygame.mixer.Sound("data/sounds/thunder.wav")
         self.lightningSound.set_volume(0.25)
     
-    def __init__(self, levelNum=14, prevScreen=None):
+    def __init__(self, levelNum=8, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()
