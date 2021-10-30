@@ -24,7 +24,7 @@ def main():
 
     pygame.mixer.music.load("data/sounds/A_Wonderful_Nightmare.ogg")
     pygame.mixer.music.set_volume(0.1)
-    #pygame.mixer.music.play(-1)
+    pygame.mixer.music.play(-1)
 
     from engine.screenmanager import ScreenManager
     from game.startscreen import StartScreen
@@ -39,8 +39,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        
-        win.fill((200,200,200))
+
+        win.fill((145,59,173))
         screenManger.draw(win)
         pygame.display.update()
 

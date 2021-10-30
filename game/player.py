@@ -26,7 +26,7 @@ class Player(Entity):
         self.groundTimer = 0
 
         maxJumpHeight = 3.35 * 12
-        minJumpHeight = 0.75 * 12
+        minJumpHeight = 0.5 * 12
         jumpDur = 0.5
 
         self.gravity = 2 * maxJumpHeight / jumpDur ** 2

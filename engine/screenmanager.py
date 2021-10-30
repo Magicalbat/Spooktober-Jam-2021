@@ -31,6 +31,15 @@ class ScreenManager:
         self.inp.update()
         self.screenWipeAnim.update(delta)
 
+        if self.inp.keyJustPressed(pygame.K_F11) or (self.inp.keyJustPressed(pygame.K_f) and (self.inp.keyDown(pygame.K_RCTRL) or self.inp.keyDown(pygame.K_LCTRL))):
+            pygame.display.toggle_fullscreen()
+        
+        if self.inp.keyJustPressed(pygame.K_m):
+            if pygame.mixer.music.get_busy():
+                pygame.mixer.music.pause()
+            else:
+                pygame.mixer.music.unpause()
+
         if not self.screenWipeAnim.active:
             self.currentScreen.update(delta, self.inp)
         elif self.prevScreenWipeKeyframe != self.screenWipeAnim.index:

@@ -92,7 +92,7 @@ class Level(GameScreen):
         self.lightningSound = pygame.mixer.Sound("data/sounds/thunder.wav")
         self.lightningSound.set_volume(0.25)
     
-    def __init__(self, levelNum=8, prevScreen=None):
+    def __init__(self, levelNum=1, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()

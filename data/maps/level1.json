@@ -516,6 +516,6 @@
             48,
             24
         ],
-        "Left, Right -> move\nc -> jump\nx -> discard pumpkin\nr -> restart\nESC -> pause"
+        "Left, Right -> move\nc / Up -> jump\nx -> discard pumpkin\nr -> restart"
     ]
 }
