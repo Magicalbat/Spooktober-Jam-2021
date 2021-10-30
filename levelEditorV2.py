@@ -12,7 +12,7 @@ pygame.display.set_caption("Level Editor V2")
 clock = pygame.time.Clock()
 fps = 60
 
-import enum, json
+import enum, json, os
 
 from engine.common import *
 from engine.input import Input
@@ -40,14 +40,15 @@ def changeCursor(cursorState):
         elif cursorState == States.EXTRA_DATA:
             pygame.mouse.set_cursor(pygame.cursors.arrow)
 
-levelNum = 9
+levelNum = 14
 
 tileSize = 12
 tilemap = Tilemap(tileSize, layers=2)
 tilemap.loadTileImgs("data/images/tiles/tiles.png", (4,4), (1, 1), 16, (0, 0, 0))
 
 loadedExtraData = {}
-loadedExtraData = tilemap.loadFromJson(f"data/maps/level{levelNum}.json", True)
+if os.path.exists(f"data/maps/level{levelNum}.json"):
+    loadedExtraData = tilemap.loadFromJson(f"data/maps/level{levelNum}.json", True)
 
 currentLayer = 0
 editState = States.PENCIL

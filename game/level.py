@@ -33,7 +33,8 @@ class Level(GameScreen):
         else:
             self.levelExit = pygame.Rect((0,0,0,0))
         
-        #spikes are going to be 4 pixels tall
+        self.spikeImg = pygame.image.load("data/images/tiles/spikes.png").convert()
+        self.spikeImg.set_colorkey((0,0,0))
         self.spikes = []
         if 'spikes' in extraMapData:
             for pos in extraMapData['spikes']:
@@ -77,7 +78,7 @@ class Level(GameScreen):
             if len(extraMapData['cameraBounds']) == 1:
                 self.cameraBound = ((0,0), extraMapData['cameraBounds'][0])
             else:
-                self.cameraBounds = (extraMapData['cameraBounds'][0], extraMapData['cameraBounds'][1])
+                self.cameraBounds = (sorted((extraMapData['cameraBounds'][0], extraMapData['cameraBounds'][1])))
         
         self.pauseMenu = Menu(["Resume", "Back"], 2, (0, 20), (5, 25), {0:self.togglePause, 1:self.screenManager.changeScreenWithTransition}, {1:self.prevScreen})
         self.paused = False
@@ -90,7 +91,7 @@ class Level(GameScreen):
         self.lightningSound = pygame.mixer.Sound("data/sounds/thunder.wav")
         self.lightningSound.set_volume(0.25)
     
-    def __init__(self, levelNum=9, prevScreen=None):
+    def __init__(self, levelNum=14, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()
@@ -113,7 +114,8 @@ class Level(GameScreen):
         self.tilemap.draw(win, self.scroll)
 
         for s in self.spikes:
-            pygame.draw.rect(win, (255,0,0), (s.x - self.scroll[0], s.y - self.scroll[1], s.w, s.h))
+            #pygame.draw.rect(win, (255,0,0), (s.x - self.scroll[0], s.y - self.scroll[1], s.w, s.h))
+            win.blit(self.spikeImg, (s.x - self.scroll[0], s.y - self.scroll[1] - 4))
         
         pygame.draw.rect(win, (0,245,255), (self.levelExit.x - self.scroll[0], self.levelExit.y - self.scroll[1], self.levelExit.w, self.levelExit.h))
 
@@ -172,17 +174,15 @@ class Level(GameScreen):
             entityRects.append(self.player.rect)
 
             for p in self.pumpkins:
+                if p.rect.collidelist(self.wind) != -1:
+                    dist = abs(p.pos.y) % 12
+                    p.velocity.y -= self.windSpeed * delta * ((max(dist, 2) / 12) * 5)
+
                 p.update(delta, entityRects, self.tilemap.chunks)
 
                 if p.stopping:
                     p.stopping = False
                     self.pumpkins.sort(key=lambda p:(p.rect.x, p.rect.y))
-                
-                if p.rect.collidelist(self.wind) != -1:
-                    dist = abs(p.pos.y) % 12
-                    if dist < 1:
-                        p.velocity.y -= self.windSpeed * delta * 1.4
-                    p.velocity.y -= self.windSpeed * delta * ((max(dist, 2) / 12) * 5)
 
             if inp.keyJustPressed(pygame.K_x):
                 if len(self.pumpkins) + 1 <= self.maxPumpkins:
