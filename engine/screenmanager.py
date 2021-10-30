@@ -6,6 +6,8 @@ from engine.gamescreen import GameScreen
 from engine.input import Input
 from engine.animation import Animation
 
+from game.audiosettings import AudioSettings
+
 class ScreenManager:
     def __init__(self, startScreen):
         self.currentScreen = startScreen
@@ -39,6 +41,9 @@ class ScreenManager:
                 pygame.mixer.music.pause()
             else:
                 pygame.mixer.music.unpause()
+
+        if self.inp.keyJustPressed(pygame.K_s):
+            AudioSettings().sfx = not AudioSettings().sfx
 
         if not self.screenWipeAnim.active:
             self.currentScreen.update(delta, self.inp)

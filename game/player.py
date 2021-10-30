@@ -6,6 +6,8 @@ from engine.entity import Entity
 from engine.animation import Animation
 from engine.common import *
 
+from game.audiosettings import AudioSettings
+
 class Player(Entity):
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height, (255,165,0))
@@ -114,7 +116,8 @@ class Player(Entity):
             self.groundTimer = 0
             self.jumpPressTimer = 0
 
-            self.jumpSound.play()
+            if AudioSettings().sfx:
+                self.jumpSound.play()
         
         if (inp.keyJustReleased(pygame.K_UP) or inp.keyJustReleased(pygame.K_c)) and self.velocity.y < self.minJumpVel:
             self.velocity.y = self.minJumpVel

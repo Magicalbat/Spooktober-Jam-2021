@@ -12,6 +12,7 @@ from engine.common import *
 from game.player import Player
 from game.pumpkin import Pumpkin
 from game.ghost import Ghost
+from game.audiosettings import AudioSettings
 
 class Level(GameScreen):
     def setup(self):
@@ -92,7 +93,7 @@ class Level(GameScreen):
         self.lightningSound = pygame.mixer.Sound("data/sounds/thunder.wav")
         self.lightningSound.set_volume(0.25)
     
-    def __init__(self, levelNum=1, prevScreen=None):
+    def __init__(self, levelNum=15, prevScreen=None):
         self.levelNum = levelNum
         self.prevScreen = prevScreen
         super().__init__()
@@ -196,7 +197,8 @@ class Level(GameScreen):
                     for rect in hitlist:
                         self.pumpkins.remove(rect)
                     
-                    self.pumpkinSpawnSound.play()
+                    if AudioSettings().sfx:
+                        self.pumpkinSpawnSound.play()
             
             if self.player.rect.collidelist(self.spikes) != -1:
                 self.player.reset()
@@ -211,7 +213,8 @@ class Level(GameScreen):
                     p.changeToJackOLantern()
                 
                 self.lightningTimer = .25
-                self.lightningSound.play()
+                if AudioSettings().sfx:
+                    self.lightningSound.play()
             
             if self.ghost.active:
                 self.player.pos = pygame.math.Vector2(self.ghost.pos.x, self.ghost.pos.y + 10)
