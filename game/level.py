@@ -212,10 +212,10 @@ class Level(GameScreen):
             if self.levelExit != pygame.Rect((0,0,0,0)):
                 self.levelExitParticles.update(delta)
                 
-                self.levelExitParticles.emit((self.levelExit.x+1, self.levelExit.y+6), 0.025)
-                self.levelExitParticles.emit((self.levelExit.x+5, self.levelExit.y+5), 0.025)
-                self.levelExitParticles.emit((self.levelExit.x+7, self.levelExit.y+7), 0.025)
-                self.levelExitParticles.emit((self.levelExit.x+10, self.levelExit.y+4), 0.025)
+                self.levelExitParticles.emit((self.levelExit.x+1, self.levelExit.y+5), 0.025)
+                self.levelExitParticles.emit((self.levelExit.x+5, self.levelExit.y+4), 0.025)
+                self.levelExitParticles.emit((self.levelExit.x+7, self.levelExit.y+6), 0.025)
+                self.levelExitParticles.emit((self.levelExit.x+10, self.levelExit.y+3), 0.025)
 
             if self.player.rect.colliderect(self.levelExit) and not self.ghost.active:
                 self.ghost.activate(self.player.pos, (self.player.pos.x < 320 / 2) * 2 - 1)
