@@ -23,7 +23,7 @@ class TestScreen(GameScreen):
 
         self.player = Player(playerSpawn[0], playerSpawn[1], 12, 12)
 
-        self.pumpkinImgs = loadSpriteSheet("data/images/pumpkins/Pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
+        self.pumpkinImgs = loadSpriteSheet("data/images/pumpkins/pumpkin.png", (14,14), (4,2), (1,1), 8, (0,0,0))
         self.pumpkinImgs = [self.pumpkinImgs[0], self.pumpkinImgs[4], self.pumpkinImgs[5]]
         self.pumpkins = []
 
